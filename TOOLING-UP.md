@@ -1,5 +1,7 @@
 **The Trouble with “Tooling Up”: How Agentic Workflows Can Steer Us Off Course**
 
+![](https://i.ytimg.com/vi/WwJk9z5AUQ4/maxresdefault.jpg)
+
 Today’s AI ecosystem is chock-full of clever solutions for automating tasks, sifting through data, and generating content—sometimes so seamlessly that we forget there’s a virtual puppet master pulling the strings. In the realm of “agentic workflows” (where AI models delegate tasks to “tools” based on a high-level goal), the allure of convenience often overshadows an important question: *Who’s truly in the driver’s seat?*
 
 ---
