@@ -3,21 +3,17 @@ import requests
 from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
 from urllib.parse import urlparse
-from fastapi import Request
-from fastapi.responses import JSONResponse
+
 import modal
 
 # Install all necessary packages in your Modal image
-image = modal.Image.debian_slim().apt_install("curl").run_commands(
-    "curl -fsSL https://ollama.com/install.sh | sh", 
-    "ollama serve &"
-).pip_install(
+image = modal.Image.debian_slim().pip_install(
     [
         "fastapi[standard]",
         "requests",
         "beautifulsoup4",
         "duckduckgo_search",
-        "ollama", "isodate","langchain_ollama", 
+        "isodate",
     ]
 )
 
@@ -85,7 +81,7 @@ def search(query: str = "", page: int = 1):
         return {"error": str(e)}
 
 
-@app.function(gpu="any")
+@app.function(gpu="any", secrets=[modal.Secret.from_dotenv()])
 @modal.web_endpoint(method="POST", docs=True)
 def api_ai(data: dict):
     """
@@ -93,52 +89,21 @@ def api_ai(data: dict):
     Expects JSON with `{"context": [...], "user_input": "some question"}`.
     Returns the same content for demonstration purposes.
     """
-    import subprocess
-    import time
     context = data.get("context", [])
     user_input = data.get("user_input", "")
-
-    # Start Ollama server
-    ollama_process = subprocess.Popen(["ollama", "serve"])
-    
-    # Wait for Ollama to start
-    for _ in range(30):  # Try for 30 seconds
-        try:
-            response = requests.get("http://localhost:11434/api/tags")
-            if response.status_code == 200:
-                print("Ollama server is ready")
-                break
-        except requests.exceptions.RequestException:
-            time.sleep(1)
-    else:
-        raise Exception("Ollama server failed to start")
-    
-    subprocess.run(["ollama", "pull", "llama3.2:3b"])
-    import ollama
-    results = []
-    full_text = ""
-    # Run a simple query with llama3.2:3b
-    response = ollama.chat(
-        model="llama3.2:3b",
+    from openai import OpenAI
+    import os
+    client = OpenAI()
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
         messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
             {
                 "role": "user",
-                "content": f"""
-[context]
-```
-{context}
-```
-[/context]
-
-Using the context above, please respond to the following user input:
-{user_input}
-"""
+                "content": user_input
             }
-        ],
+        ]
     )
-    print(response['message']['content'])
-    # Clean up
-    ollama_process.terminate()
-    ollama_process.wait()
-    return JSONResponse(content={"context": context, "user_input": user_input,"q":user_input, "ai_response": response['message']['content']})
-    
+    print(completion.choices[0].message)
+    return JSONResponse(content={"context": context, "user_input": user_input,"q":q, "ai_response": completion.choices[0].message})
+
