@@ -443,7 +443,7 @@
                     loadingSpinner.classList.remove('hidden');  
                 }  
                 currentQuery = input.value;  
-                fetch(`https://ranfysvalle02--oblivious-web-search-dev.modal.run?query=${encodeURIComponent(currentQuery)}&page=${page}`)  
+                fetch(`https://ranfysvalle02--oblivious-web-search.modal.run?query=${encodeURIComponent(currentQuery)}&page=${page}`)  
                     .then((res) => res.json())  
                     .then((data) => {  
                         if (data.results) {  
@@ -510,7 +510,7 @@
                 return;  
             }  
   
-            fetch('/create_ctx', {  
+            fetch('https://ranfysvalle02--oblivious-web-create-ctx.modal.run', {  
                 method: 'POST',  
                 headers: {  
                     'Content-Type': 'application/json',  
@@ -572,7 +572,7 @@
                 contextData.push({ url, text });  
             });  
   
-            fetch('/api/ai', {  
+            fetch('https://ranfysvalle02--oblivious-web-api-ai.modal.run', {  
                 method: 'POST',  
                 headers: {  
                     'Content-Type': 'application/json',  
