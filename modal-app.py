@@ -4,6 +4,9 @@ from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
 from urllib.parse import urlparse
 
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
 import modal
 
 # Install all necessary packages in your Modal image
@@ -14,6 +17,7 @@ image = modal.Image.debian_slim().pip_install(
         "beautifulsoup4",
         "duckduckgo_search",
         "isodate",
+        "openai"
     ]
 )
 
@@ -94,16 +98,22 @@ def api_ai(data: dict):
     from openai import OpenAI
     import os
     client = OpenAI()
-    completion = client.chat.completions.create(
+    response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {
                 "role": "user",
-                "content": user_input
+                "content": f"""
+                [context]
+                {context}
+                [/context]
+
+                Use the [context] to answer the following question:
+                {user_input}
+                """
             }
         ]
     )
-    print(completion.choices[0].message)
-    return JSONResponse(content={"context": context, "user_input": user_input,"q":q, "ai_response": completion.choices[0].message})
+    return JSONResponse(content={"context": context, "user_input": user_input,"q":user_input, "ai_response": response.choices[0].message.content})
 
