@@ -7,30 +7,18 @@ Today’s AI ecosystem is chock-full of clever solutions for automating tasks, s
 ---
 
 ### Biases Hiding in Plain Sight
-When an agentic workflow relies on tools—whether it’s something like CrewAI, custom DuckDuckGo wrappers (like `DDGS`), or LangChain’s suite of modular components—it’s easy to assume that the system neutrally pulls the “best” search results or takes the “most logical” next step. But in reality, each tool has its own internal logic, biases, and data sources. These biases may be as subtle as favoring established tech blogs over niche research papers or as glaring as mixing up two completely unrelated topics due to quirks in a dataset. The problem is compounded when an agentic AI can’t easily explain *why* it chose certain results over others—leading us to trust it without question.
+When an agentic workflow relies on tools like custom DuckDuckGo wrappers (like `DDGS`) - it’s easy to assume that the system neutrally pulls the “best” search results or takes the “most logical” next step. But in reality, each tool has its own internal logic, biases, and data sources. These biases may be as subtle as favoring established tech blogs over niche research papers or as glaring as mixing up two completely unrelated topics. The problem is compounded when an agentic AI can’t easily explain *why* it chose certain results over others—leading us to trust it without question.
 
 ---
 
 ### Cascading Consequences
-When even one tool in an agentic workflow tilts toward certain data, everything downstream is affected. Picture a scenario where you’re researching the latest trends in wearable tech, only to have the AI keep surfacing competing headphone brands because they share keywords with certain health trackers. The agent might confidently produce a top-five list of “wearable tech must-haves” that lumps together entirely distinct categories—leaving the human user scratching their head. If the system’s best guess leads you astray, your downstream tasks (like writing a product comparison or making a purchase decision) become riddled with inaccuracies.
+When even one tool in an agentic workflow tilts toward certain data, everything downstream is affected. If the system’s best guess leads you astray, your downstream tasks (like writing a product comparison or making a purchase decision) become riddled with inaccuracies.
 
 ---
 
-### Why It’s Hard to Spot
-One reason these issues can slip under the radar is that sophisticated agentic workflows excel at weaving convincing narratives around their outputs. They cite popular references, highlight user reviews, and even generate crisp marketing copy. This veneer of authenticity can lull users into trusting the final result more than they should. When the same agent picks from its stable of tools repeatedly, its bias may spiral—pulling from the same flawed data and reinforcing its own misconceptions.
 
----
-
-### The Challenge of Collaboration
-Agentic workflows are meant to lighten your load, but the partnership between humans and AI must stay balanced. When developers leverage tools like LangChain to orchestrate everything from data retrieval to text generation, there’s a temptation to “set and forget.” And while these workflows can indeed speed up repetitive tasks, we must remain vigilant: *which sources are being searched, which algorithms decide relevance, and how are they weighting their conclusions?*
-
----
-
-### A Recipe for Better Outcomes
-1. **Diverse Tooling**: Think about introducing multiple, varied sources for searches. Don’t rely on a single plug-and-play option for all your data needs.
-2. **Iterative Checks**: Implement regular checkpoints where a human (or another AI with different biases) reviews the intermediate outputs. 
-3. **Explainable Results**: Favor agentic setups that can show their work. Tools that can log their intermediate reasoning help spot questionable leaps of logic.
-4. **User Feedback Loops**: Provide a simple mechanism for users to flag suspicious or obviously incorrect results, feeding that back into the workflow to refine future outcomes.
+### The Challenge 
+When developers leverage tools to orchestrate everything from data retrieval to text generation, there’s a temptation to “set and forget.” And while these workflows can indeed speed up repetitive tasks, we must remain vigilant: *which sources are being searched, which algorithms decide relevance, and how are they weighting their conclusions?*
 
 ---
 
