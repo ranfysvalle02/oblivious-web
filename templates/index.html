@@ -1,0 +1,702 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <!-- Metadata and Tailwind CSS -->  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Search Experience</title>  
+    <script src="https://cdn.tailwindcss.com"></script>  
+    <style>  
+        /* Background Gradient */  
+        body {  
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);  
+            font-family: 'Inter', sans-serif;  
+            overflow: hidden;  
+            transition: background 0.5s;  
+        }  
+  
+        /* Search Input Styling */  
+        #search-input {  
+            animation: pop-in 1s cubic-bezier(0.5, 1.4, 0.5, 1.4);  
+            border: none;  
+            outline: none;  
+            background: linear-gradient(90deg, #fff, #f7f7f7);  
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);  
+            transition: all 0.3s ease-in-out;  
+        }  
+  
+        #search-input:focus {  
+            transform: scale(1.05);  
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2);  
+        }  
+  
+        /* Search Button Styling */  
+        #search-button {  
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);  
+            color: white;  
+            padding: 0.75rem 1.5rem;  
+            border: none;  
+            border-radius: 9999px;  
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);  
+            transition: all 0.3s ease-in-out;  
+        }  
+  
+        #search-button:hover {  
+            transform: scale(1.05);  
+            box-shadow: 0 8px 20px rgba(255, 126, 95, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2);  
+        }  
+  
+        /* Modal Entrance and Exit Animations */  
+        @keyframes modal-enter {  
+            0% {  
+                opacity: 0;  
+                transform: scale(0.8) translateY(50%) rotateX(-90deg);  
+            }  
+            100% {  
+                opacity: 1;  
+                transform: scale(1) translateY(0%) rotateX(0deg);  
+            }  
+        }  
+  
+        @keyframes modal-exit {  
+            0% {  
+                opacity: 1;  
+                transform: scale(1) translateY(0%) rotateX(0deg);  
+            }  
+            100% {  
+                opacity: 0;  
+                transform: scale(0.8) translateY(50%) rotateX(90deg);  
+            }  
+        }  
+  
+        /* Search Results Styling */  
+        #results-list {  
+            width: 100%;  
+        }  
+  
+        .result-item {  
+            transition: background 0.2s ease-in-out;  
+            cursor: pointer;  
+            background: white;  
+            animation: fade-in 0.5s cubic-bezier(0.5, 1.4, 0.5, 1.4) forwards;  
+            padding: 1rem;  
+            border-bottom: 1px solid #e5e7eb;  
+            display: flex;  
+            flex-direction: column;  
+        }  
+  
+        .result-item:hover {  
+            background: #f9f9f9;  
+        }  
+  
+        .result-icon {  
+            width: 1rem;  
+            height: 1rem;  
+            margin-right: 0.5rem;  
+        }  
+  
+        .result-header {  
+            display: flex;  
+            align-items: center;  
+            margin-bottom: 0.5rem;  
+        }  
+  
+        /* Pagination Styling */  
+        .pagination {  
+            display: flex;  
+            justify-content: center;  
+            align-items: center;  
+            margin-top: 1rem;  
+            flex-wrap: wrap;  
+        }  
+  
+        .pagination button {  
+            margin: 0.25rem;  
+            padding: 0.5rem 0.75rem;  
+            border: 1px solid #d1d5db;  
+            border-radius: 0.375rem;  
+            background: white;  
+            cursor: pointer;  
+        }  
+  
+        .pagination button:hover {  
+            background: #f3f4f6;  
+        }  
+  
+        .pagination button.disabled {  
+            opacity: 0.5;  
+            cursor: not-allowed;  
+        }  
+  
+        /* Modal Styling */  
+        .modal {  
+            animation: modal-enter 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;  
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);  
+            border-radius: 20px;  
+            max-height: 90vh;  
+            overflow: auto;  
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;  
+            transform-origin: center;  
+        }  
+  
+        .modal.hidden {  
+            animation: modal-exit 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;  
+        }  
+  
+        /* Button */  
+        #close-modal:hover {  
+            transform: rotate(90deg);  
+            transition: transform 0.3s ease-in-out;  
+        }  
+  
+        /* Animations */  
+        @keyframes fade-in {  
+            from {  
+                opacity: 0;  
+                transform: translateY(20px);  
+            }  
+            to {  
+                opacity: 1;  
+                transform: translateY(0);  
+            }  
+        }  
+  
+        @keyframes pop-in {  
+            0% {  
+                transform: scale(0.8);  
+                opacity: 0;  
+            }  
+            100% {  
+                transform: scale(1);  
+                opacity: 1;  
+            }  
+        }  
+  
+        /* Canvas for Stars */  
+        canvas {  
+            position: absolute;  
+            top: 0;  
+            left: 0;  
+            width: 100%;  
+            height: 100%;  
+            z-index: -1;  
+        }  
+  
+        /* Hyperspace Effect */  
+        @keyframes hyperspace {  
+            0% {  
+                opacity: 1;  
+                transform: scale(1);  
+            }  
+            50% {  
+                opacity: 0;  
+                transform: scale(0.5) rotateY(180deg);  
+            }  
+            100% {  
+                opacity: 1;  
+                transform: scale(1) rotateY(360deg);  
+            }  
+        }  
+  
+        .hyperspace {  
+            animation: hyperspace 1s ease-in-out forwards;  
+        }  
+  
+        /* Loading Spinner */  
+        .spinner {  
+            border: 4px solid rgba(255, 255, 255, 0.3);  
+            border-top: 4px solid #fff;  
+            border-radius: 50%;  
+            width: 2rem;  
+            height: 2rem;  
+            animation: spin 1s linear infinite;  
+        }  
+  
+        @keyframes spin {  
+            0% {  
+                transform: rotate(0deg);  
+            }  
+            100% {  
+                transform: rotate(360deg);  
+            }  
+        }  
+  
+        #results-modal {  
+            background-color: white;  
+            border-radius: 20px;  
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);  
+            max-height: 90vh;  
+            overflow: auto;  
+            transform-origin: center;  
+        }  
+  
+        /* Code Block Styling */  
+        .code-block {  
+            background-color: #f5f5f5;  
+            padding: 1em;  
+            border-radius: 5px;  
+            overflow-x: auto;  
+            margin-top: 1em;  
+            display: none;  
+            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;  
+        }  
+  
+        .code-block.expanded {  
+            display: block;  
+        }  
+  
+        .expand-button {  
+            cursor: pointer;  
+            color: #2563EB;  
+        }  
+  
+        .expand-button:hover {  
+            text-decoration: underline;  
+        }  
+  
+        /* Star Twinkling */  
+        @keyframes twinkle {  
+            from {  
+                opacity: 0.3;  
+            }  
+            50% {  
+                opacity: 1;  
+            }  
+            to {  
+                opacity: 0.3;  
+            }  
+        }  
+  
+        /* Animated Scrollbar */  
+        ::-webkit-scrollbar {  
+            width: 8px;  
+        }  
+  
+        ::-webkit-scrollbar-track {  
+            background: #f1f1f1;  
+        }  
+  
+        ::-webkit-scrollbar-thumb {  
+            background: #888;  
+            border-radius: 4px;  
+        }  
+  
+        ::-webkit-scrollbar-thumb:hover {  
+            background: #555;  
+        }  
+  
+        /* JSON Syntax Highlighting */  
+        pre.json-display {  
+            background-color: #f5f5f5;  
+            padding: 1em;  
+            border-radius: 5px;  
+            overflow-x: auto;  
+            max-height: 400px;  
+        }  
+  
+        pre.json-display code {  
+            font-family: monospace;  
+            font-size: 14px;  
+            line-height: 1.5;  
+        }  
+  
+        pre.json-display .string {  
+            color: #0bda51;  
+        }  
+  
+        pre.json-display .number {  
+            color: #ff6600;  
+        }  
+  
+        pre.json-display .boolean {  
+            color: #1c00cf;  
+        }  
+  
+        pre.json-display .null {  
+            color: magenta;  
+        }  
+  
+        pre.json-display .key {  
+            color: #d14;  
+        }  
+  
+    </style>  
+</head>  
+<body class="flex items-center justify-center min-h-screen">  
+    <!-- Canvas for Stars -->  
+    <canvas id="stars"></canvas>  
+  
+    <!-- Search Container -->  
+    <div class="text-center w-full max-w-xl">  
+        <h1 class="text-5xl font-extrabold text-white mb-8 tracking-wide animate-bounce">  
+            Search the Universe <img src="https://bulloch.solutions/wp-content/uploads/2024/08/home-hero.png" style="width:5rem; float: right; margin-top: -1em;" />  
+        </h1>  
+        <div class="flex items-center">  
+            <input  
+                type="text"  
+                id="search-input"  
+                class="w-full px-6 py-4 text-lg rounded-full focus:outline-none shadow-lg placeholder-gray-500"  
+                placeholder="Search for knowledge..."  
+            />  
+            <button  
+                id="search-button"  
+                class="ml-4 px-6 py-4 text-lg rounded-full bg-white text-gray-700 shadow-lg hover:bg-gray-100"  
+            >  
+                Search  
+            </button>  
+            <div id="loading-spinner" class="spinner hidden ml-4"></div>  
+        </div>  
+    </div>  
+  
+    <!-- Results Modal -->  
+    <div  
+        id="results-modal"  
+        class="modal hidden fixed inset-0 bg-white p-10 flex flex-col space-y-6 z-50 overflow-auto"  
+    >  
+        <div class="w-full mx-auto max-w-4xl">  
+            <button  
+                id="close-modal"  
+                class="text-gray-500 text-3xl hover:text-gray-800 transform transition-transform self-end"  
+            >  
+                ✖  
+            </button>  
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Search Results</h2>  
+            <div id="results-list"></div>  
+            <div class="pagination" id="pagination"></div>  
+            <button  
+                id="create-context-button"  
+                class="px-6 py-4 text-lg rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600 mt-4"  
+            >  
+                Create Context  
+            </button>  
+            <div id="context-display" class="w-full mt-4"></div>  
+  
+            <!-- Textarea for user input -->  
+            <div id="user-input-section" class="w-full mt-4 hidden">  
+                <textarea id="user-textarea" class="w-full p-4 border rounded-lg" rows="5" placeholder="Enter your input here..."></textarea>  
+                <button  
+                    id="submit-ai-button"  
+                    class="mt-4 px-6 py-4 text-lg rounded-full bg-green-500 text-white shadow-lg hover:bg-green-600"  
+                >  
+                    Submit to AI  
+                </button>  
+            </div>  
+  
+            <!-- Display AI Response -->  
+            <div id="ai-response-display" class="w-full mt-4"></div>  
+  
+        </div>  
+    </div>  
+  
+    <!-- JavaScript -->  
+    <script>  
+        const input = document.getElementById('search-input');  
+        const modal = document.getElementById('results-modal');  
+        const resultsList = document.getElementById('results-list');  
+        const closeModal = document.getElementById('close-modal');  
+        const searchButton = document.getElementById('search-button');  
+        const loadingSpinner = document.getElementById('loading-spinner');  
+        const createContextButton = document.getElementById('create-context-button');  
+        const paginationContainer = document.getElementById('pagination');  
+        const userInputSection = document.getElementById('user-input-section');  
+        const userTextarea = document.getElementById('user-textarea');  
+        const submitAIButton = document.getElementById('submit-ai-button');  
+        const aiResponseDisplay = document.getElementById('ai-response-display');  
+        let currentQuery = '';  
+        let currentPage = 1;  
+        let totalPages = 1;  
+  
+        // Function to syntax-highlight JSON  
+        function syntaxHighlight(json) {  
+            if (typeof json != 'string') {  
+                json = JSON.stringify(json, undefined, 2);  
+            }  
+            json = json  
+                .replace(/&/g, '&amp;')  
+                .replace(/</g, '&lt;')  
+                .replace(/>/g, '&gt;')  
+                .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\\s*:)?|\b(true|false|null)\b|\d+(\.\d+)?)/g, function (match) {  
+                    let cls = 'number';  
+                    if (/^"/.test(match)) {  
+                        if (/:$/.test(match)) {  
+                            cls = 'key';  
+                        } else {  
+                            cls = 'string';  
+                        }  
+                    } else if (/true|false/.test(match)) {  
+                        cls = 'boolean';  
+                    } else if (/null/.test(match)) {  
+                        cls = 'null';  
+                    }  
+                    return `<span class="${cls}">${match}</span>`;  
+                });  
+            return json;  
+        }  
+  
+        // Handle search with hyperspace effect  
+        const performSearch = (page = 1) => {  
+            if (input.value.trim()) {  
+                if (page === 1) {  
+                    document.body.classList.add('hyperspace');  
+                    input.disabled = true;  
+                    searchButton.classList.add('hidden');  
+                    loadingSpinner.classList.remove('hidden');  
+                }  
+                currentQuery = input.value;  
+                fetch(`/search?query=${encodeURIComponent(currentQuery)}&page=${page}`)  
+                    .then((res) => res.json())  
+                    .then((data) => {  
+                        if (data.results) {  
+                            resultsList.innerHTML = data.results  
+                                .map((item, index) => `  
+                                    <div class="result-item">  
+                                        <div class="result-header">  
+                                            <input type="checkbox" id="result-${index}" value="${item.link}" class="mr-2">  
+                                            <img src="${item.favicon}" class="result-icon" alt="icon">  
+                                            <a href="${item.link}" target="_blank" class="text-xl font-semibold ml-2">${item.title}</a>  
+                                        </div>  
+                                        <div class="text-gray-600">${item.description}</div>  
+                                        <div class="text-sm text-green-600 mt-1">${item.display_link}</div>  
+                                    </div>  
+                                `)  
+                                .join('');  
+                            currentPage = data.page;  
+                            totalPages = data.total_pages;  
+                            renderPagination();  
+                        } else {  
+                            resultsList.innerHTML = '<div class="result-item">No results found.</div>';  
+                            paginationContainer.innerHTML = '';  
+                        }  
+                        if (page === 1) {  
+                            modal.classList.remove('hidden');  
+                            document.body.classList.remove('hyperspace');  
+                            input.disabled = false;  
+                            searchButton.classList.remove('hidden');  
+                            loadingSpinner.classList.add('hidden');  
+                        }  
+                    });  
+            }  
+        };  
+  
+        input.addEventListener('keydown', (e) => {  
+            if (e.key === 'Enter') {  
+                performSearch();  
+            }  
+        });  
+  
+        searchButton.addEventListener('click', () => performSearch());  
+  
+        // Close modal  
+        closeModal.addEventListener('click', () => {  
+            modal.classList.add('hidden');  
+            // Clear previous context display  
+            document.getElementById('context-display').innerHTML = '';  
+            resultsList.innerHTML = '';  
+            paginationContainer.innerHTML = '';  
+            aiResponseDisplay.innerHTML = '';  
+            userInputSection.classList.add('hidden');  
+            userTextarea.value = '';  
+            currentPage = 1;  
+            totalPages = 1;  
+        });  
+  
+        // Create context  
+        createContextButton.addEventListener('click', () => {  
+            const selectedUrls = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))  
+                .map(checkbox => checkbox.value);  
+  
+            if (selectedUrls.length === 0) {  
+                alert('Please select at least one result to create context.');  
+                return;  
+            }  
+  
+            fetch('/create_ctx', {  
+                method: 'POST',  
+                headers: {  
+                    'Content-Type': 'application/json',  
+                },  
+                body: JSON.stringify({ urls: selectedUrls }),  
+            })  
+            .then(response => response.json())  
+            .then(data => {  
+                // Display the context in the modal  
+                const contextHtml = data.context.map((item, idx) => `  
+                    <div class="context-item">  
+                        <h3 class="text-lg font-bold mt-4">${item.url}</h3>  
+                        ${item.error ? `<p class="text-red-500">${item.error}</p>` : `  
+                        <p class="expand-button text-blue-600 underline" data-index="${idx}">Show Context ▼</p>  
+                        <pre class="code-block" id="code-block-${idx}"><code>${item.text}</code></pre>`}  
+                    </div>  
+                `).join('');  
+                document.getElementById('context-display').innerHTML = contextHtml;  
+  
+                // Show the user input section  
+                userInputSection.classList.remove('hidden');  
+  
+                // Add event listeners to expand buttons  
+                document.querySelectorAll('.expand-button').forEach(button => {  
+                    button.addEventListener('click', (e) => {  
+                        const index = e.target.getAttribute('data-index');  
+                        const codeBlock = document.getElementById(`code-block-${index}`);  
+                        if (codeBlock.style.display === 'block') {  
+                            codeBlock.style.display = 'none';  
+                            e.target.textContent = 'Show Context ▼';  
+                        } else {  
+                            codeBlock.style.display = 'block';  
+                            e.target.textContent = 'Hide Context ▲';  
+                        }  
+                    });  
+                });  
+            })  
+            .catch(error => {  
+                console.error('Error:', error);  
+                alert('An error occurred while creating context.');  
+            });  
+        });  
+  
+        // Submit context and textarea input to /api/ai  
+        submitAIButton.addEventListener('click', () => {  
+            const userInput = userTextarea.value.trim();  
+            if (!userInput) {  
+                alert('Please enter your input in the textarea.');  
+                return;  
+            }  
+  
+            // Get the context  
+            const contextItems = document.querySelectorAll('.context-item');  
+            const contextData = [];  
+            contextItems.forEach((item, idx) => {  
+                const url = item.querySelector('h3').textContent;  
+                const textElement = item.querySelector(`#code-block-${idx} code`);  
+                const text = textElement ? textElement.textContent : '';  
+                contextData.push({ url, text });  
+            });  
+  
+            fetch('/api/ai', {  
+                method: 'POST',  
+                headers: {  
+                    'Content-Type': 'application/json',  
+                },  
+                body: JSON.stringify({  
+                    context: contextData,  
+                    user_input: userInput  
+                }),  
+            })  
+            .then(response => response.json())  
+            .then(data => {  
+                // Display the AI response with syntax highlighting  
+                aiResponseDisplay.innerHTML = `<pre class="json-display"><code>${syntaxHighlight(data)}</code></pre>`;  
+            })  
+            .catch(error => {  
+                console.error('Error:', error);  
+                alert('An error occurred while communicating with the AI.');  
+            });  
+        });  
+  
+        // Pagination  
+        const renderPagination = () => {  
+            let buttons = '';  
+            if (currentPage > 1) {  
+                buttons += `<button onclick="performSearch(${currentPage - 1})">Previous</button>`;  
+            } else {  
+                buttons += `<button class="disabled" disabled>Previous</button>`;  
+            }  
+  
+            // Limit the number of displayed page buttons  
+            let startPage = Math.max(1, currentPage - 2);  
+            let endPage = Math.min(totalPages, currentPage + 2);  
+  
+            if (startPage > 1) {  
+                buttons += `<button onclick="performSearch(1)">1</button>`;  
+                if (startPage > 2) {  
+                    buttons += `<span>...</span>`;  
+                }  
+            }  
+  
+            for (let i = startPage; i <= endPage; i++) {  
+                if (i === currentPage) {  
+                    buttons += `<button class="disabled" disabled>${i}</button>`;  
+                } else {  
+                    buttons += `<button onclick="performSearch(${i})">${i}</button>`;  
+                }  
+            }  
+  
+            if (endPage < totalPages) {  
+                if (endPage < totalPages - 1) {  
+                    buttons += `<span>...</span>`;  
+                }  
+                buttons += `<button onclick="performSearch(${totalPages})">${totalPages}</button>`;  
+            }  
+  
+            if (currentPage < totalPages) {  
+                buttons += `<button onclick="performSearch(${currentPage + 1})">Next</button>`;  
+            } else {  
+                buttons += `<button class="disabled" disabled>Next</button>`;  
+            }  
+            paginationContainer.innerHTML = buttons;  
+        };  
+  
+        // Animate stars  
+        const canvas = document.getElementById('stars');  
+        const ctx = canvas.getContext('2d');  
+        let stars = [];  
+  
+        const createStars = () => {  
+            for (let i = 0; i < 200; i++) {  
+                stars.push({  
+                    x: Math.random() * canvas.width,  
+                    y: Math.random() * canvas.height,  
+                    radius: Math.random() * 1.5,  
+                    alpha: Math.random(),  
+                    speed: Math.random() * 0.5 + 0.5,  
+                });  
+            }  
+        };  
+  
+        const drawStars = () => {  
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  
+            stars.forEach(star => {  
+                ctx.beginPath();  
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);  
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;  
+                ctx.fill();  
+            });  
+        };  
+  
+        const animateStars = () => {  
+            stars.forEach(star => {  
+                star.y += star.speed;  
+                if (star.y > canvas.height) {  
+                    star.y = 0;  
+                    star.x = Math.random() * canvas.width;  
+                }  
+                star.alpha += (Math.random() - 0.5) * 0.02;  
+                star.alpha = Math.max(Math.min(star.alpha, 1), 0.3);  
+            });  
+            drawStars();  
+            requestAnimationFrame(animateStars);  
+        };  
+  
+        const resizeCanvas = () => {  
+            canvas.width = window.innerWidth;  
+            canvas.height = window.innerHeight;  
+            stars = [];  
+            createStars();  
+            drawStars();  
+        };  
+  
+        window.addEventListener('resize', resizeCanvas);  
+        resizeCanvas();  
+        createStars();  
+        animateStars();  
+  
+        // Animate background gradient  
+        document.addEventListener('mousemove', (e) => {  
+            const x = e.clientX / window.innerWidth;  
+            const y = e.clientY / window.innerHeight;  
+            document.body.style.background = `linear-gradient(135deg, rgba(${106 + x * 50}, 17, 203, 1) 0%, rgba(${37 + y * 50}, 117, 252, 1) 100%)`;  
+        });  
+  
+    </script>  
+</body>  
+</html>  
