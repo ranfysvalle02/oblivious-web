@@ -96,8 +96,11 @@ def create_ctx(data: dict):
     for url in urls:
         try:
             # Use Jina shortlink
-            headers = {"Authorization": f"Bearer {JINA_API}"}
-            response = requests.get(f"https://r.jina.ai/{url}", timeout=5, headers=headers)
+            headers = {
+                "Authorization": f"Bearer {JINA_API_KEY}",
+                "X-Timeout": "180"
+            }
+            response = requests.get(f"https://r.jina.ai/{url}", headers=headers)
             soup = BeautifulSoup(response.content, "html.parser")
             
             # Remove script and style elements
