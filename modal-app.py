@@ -43,9 +43,7 @@ def search(query: str = "", page: int = 1):
         max_results = 30  # Limit total results to 30
         search_results = ddgs.text(
             query,
-            region="wt-wt",
             safesearch="Moderate",
-            timelimit="y",
             max_results=max_results,
         )
         results_list = list(search_results)
