@@ -4,9 +4,12 @@ import requests
 from duckduckgo_search import DDGS  
 from urllib.parse import urlparse  
 import threading  
+import os
   
 app = Flask(__name__)  
-  
+
+JINA_API_KEY = os.getenv('JINA_API_KEY')
+
 # Cache to store search results temporarily  
 search_cache = {}  
   
@@ -80,7 +83,10 @@ def create_ctx():
   
     for url in urls:  
         try:  
-            response = requests.get(url, timeout=5)  
+            response = requests.get(f"https://r.jina.ai/{url}", timeout=5)  
+            headers = {
+                'Authorization': f'Bearer {JINA_API_KEY}'
+            }
             soup = BeautifulSoup(response.content, "html.parser")  
             # Remove script and style elements  
             for script in soup(["script", "style"]):  
