@@ -3,7 +3,8 @@ import requests
 from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
 from urllib.parse import urlparse
-
+from fastapi import Request
+from fastapi.responses import JSONResponse
 import modal
 
 # Install all necessary packages in your Modal image
@@ -92,6 +93,8 @@ def api_ai(data: dict):
     Expects JSON with `{"context": [...], "user_input": "some question"}`.
     Returns the same content for demonstration purposes.
     """
+    import subprocess
+    import time
     context = data.get("context", [])
     user_input = data.get("user_input", "")
 
@@ -121,7 +124,14 @@ def api_ai(data: dict):
             {
                 "role": "user",
                 "content": f"""
-{q}
+[context]
+```
+{context}
+```
+[/context]
+
+Using the context above, please respond to the following user input:
+{user_input}
 """
             }
         ],
@@ -130,8 +140,5 @@ def api_ai(data: dict):
     # Clean up
     ollama_process.terminate()
     ollama_process.wait()
-    return JSONResponse(content={"context": context, "user_input": user_input,"q":q, "ai_response": response['message']['content']})
-    #context = data.get("context", [])
-    #user_input = data.get("user_input", "")
-    # For now, just echo back the context and user_input
-    #return {"context": context, "user_input": user_input}
+    return JSONResponse(content={"context": context, "user_input": user_input,"q":user_input, "ai_response": response['message']['content']})
+    
