@@ -14,7 +14,6 @@
             overflow: hidden;  
             transition: background 0.5s;  
         }  
-  
         /* Search Input Styling */  
         #search-input {  
             animation: pop-in 1s cubic-bezier(0.5, 1.4, 0.5, 1.4);  
@@ -24,12 +23,10 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);  
             transition: all 0.3s ease-in-out;  
         }  
-  
         #search-input:focus {  
             transform: scale(1.05);  
             box-shadow: 0 8px 20px rgba(255, 255, 255, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2);  
         }  
-  
         /* Search Button Styling */  
         #search-button {  
             background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);  
@@ -40,12 +37,10 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);  
             transition: all 0.3s ease-in-out;  
         }  
-  
         #search-button:hover {  
             transform: scale(1.05);  
             box-shadow: 0 8px 20px rgba(255, 126, 95, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2);  
         }  
-  
         /* Modal Entrance and Exit Animations */  
         @keyframes modal-enter {  
             0% {  
@@ -57,7 +52,6 @@
                 transform: scale(1) translateY(0%) rotateX(0deg);  
             }  
         }  
-  
         @keyframes modal-exit {  
             0% {  
                 opacity: 1;  
@@ -68,12 +62,10 @@
                 transform: scale(0.8) translateY(50%) rotateX(90deg);  
             }  
         }  
-  
         /* Search Results Styling */  
         #results-list {  
             width: 100%;  
         }  
-  
         .result-item {  
             transition: background 0.2s ease-in-out;  
             cursor: pointer;  
@@ -84,23 +76,19 @@
             display: flex;  
             flex-direction: column;  
         }  
-  
         .result-item:hover {  
             background: #f9f9f9;  
         }  
-  
         .result-icon {  
             width: 1rem;  
             height: 1rem;  
             margin-right: 0.5rem;  
         }  
-  
         .result-header {  
             display: flex;  
             align-items: center;  
             margin-bottom: 0.5rem;  
         }  
-  
         /* Pagination Styling */  
         .pagination {  
             display: flex;  
@@ -109,7 +97,6 @@
             margin-top: 1rem;  
             flex-wrap: wrap;  
         }  
-  
         .pagination button {  
             margin: 0.25rem;  
             padding: 0.5rem 0.75rem;  
@@ -118,16 +105,13 @@
             background: white;  
             cursor: pointer;  
         }  
-  
         .pagination button:hover {  
             background: #f3f4f6;  
         }  
-  
         .pagination button.disabled {  
             opacity: 0.5;  
             cursor: not-allowed;  
         }  
-  
         /* Modal Styling */  
         .modal {  
             animation: modal-enter 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;  
@@ -138,17 +122,14 @@
             transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;  
             transform-origin: center;  
         }  
-  
         .modal.hidden {  
             animation: modal-exit 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;  
         }  
-  
         /* Button */  
         #close-modal:hover {  
             transform: rotate(90deg);  
             transition: transform 0.3s ease-in-out;  
         }  
-  
         /* Animations */  
         @keyframes fade-in {  
             from {  
@@ -160,7 +141,6 @@
                 transform: translateY(0);  
             }  
         }  
-  
         @keyframes pop-in {  
             0% {  
                 transform: scale(0.8);  
@@ -171,7 +151,6 @@
                 opacity: 1;  
             }  
         }  
-  
         /* Canvas for Stars */  
         canvas {  
             position: absolute;  
@@ -181,7 +160,6 @@
             height: 100%;  
             z-index: -1;  
         }  
-  
         /* Hyperspace Effect */  
         @keyframes hyperspace {  
             0% {  
@@ -197,11 +175,9 @@
                 transform: scale(1) rotateY(360deg);  
             }  
         }  
-  
         .hyperspace {  
             animation: hyperspace 1s ease-in-out forwards;  
         }  
-  
         /* Loading Spinner */  
         .spinner {  
             border: 4px solid rgba(255, 255, 255, 0.3);  
@@ -211,7 +187,6 @@
             height: 2rem;  
             animation: spin 1s linear infinite;  
         }  
-  
         @keyframes spin {  
             0% {  
                 transform: rotate(0deg);  
@@ -220,7 +195,6 @@
                 transform: rotate(360deg);  
             }  
         }  
-  
         #results-modal {  
             background-color: white;  
             border-radius: 20px;  
@@ -229,7 +203,6 @@
             overflow: auto;  
             transform-origin: center;  
         }  
-  
         /* Code Block Styling */  
         .code-block {  
             background-color: #f5f5f5;  
@@ -240,20 +213,16 @@
             display: none;  
             transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;  
         }  
-  
         .code-block.expanded {  
             display: block;  
         }  
-  
         .expand-button {  
             cursor: pointer;  
             color: #2563EB;  
         }  
-  
         .expand-button:hover {  
             text-decoration: underline;  
         }  
-  
         /* Star Twinkling */  
         @keyframes twinkle {  
             from {  
@@ -266,25 +235,20 @@
                 opacity: 0.3;  
             }  
         }  
-  
         /* Animated Scrollbar */  
         ::-webkit-scrollbar {  
             width: 8px;  
         }  
-  
         ::-webkit-scrollbar-track {  
             background: #f1f1f1;  
         }  
-  
         ::-webkit-scrollbar-thumb {  
             background: #888;  
             border-radius: 4px;  
         }  
-  
         ::-webkit-scrollbar-thumb:hover {  
             background: #555;  
         }  
-  
         /* JSON Syntax Highlighting */  
         pre.json-display {  
             background-color: #f5f5f5;  
@@ -293,34 +257,365 @@
             overflow-x: auto;  
             max-height: 400px;  
         }  
-  
         pre.json-display code {  
             font-family: monospace;  
             font-size: 14px;  
             line-height: 1.5;  
         }  
-  
         pre.json-display .string {  
             color: #0bda51;  
         }  
-  
         pre.json-display .number {  
             color: #ff6600;  
         }  
-  
         pre.json-display .boolean {  
             color: #1c00cf;  
         }  
-  
         pre.json-display .null {  
             color: magenta;  
         }  
-  
         pre.json-display .key {  
             color: #d14;  
         }  
-  
     </style>  
+    <style>
+        /* Background Gradient */
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            transition: background 0.5s;
+        }
+        /* Search Input Styling */
+        #search-input {
+            animation: pop-in 1s cubic-bezier(0.5, 1.4, 0.5, 1.4);
+            border: none;
+            outline: none;
+            background: linear-gradient(90deg, #fff, #f7f7f7);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease-in-out;
+        }
+        #search-input:focus {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        /* Search Button Styling */
+        #search-button {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 9999px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease-in-out;
+        }
+        #search-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 126, 95, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        /* Modal Entrance and Exit Animations */
+        @keyframes modal-enter {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(50%) rotateX(-90deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0%) rotateX(0deg);
+            }
+        }
+        @keyframes modal-exit {
+            0% {
+                opacity: 1;
+                transform: scale(1) translateY(0%) rotateX(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8) translateY(50%) rotateX(90deg);
+            }
+        }
+        /* Search Results Styling */
+        #results-list {
+            width: 100%;
+        }
+        .result-item {
+            transition: background 0.2s ease-in-out;
+            cursor: pointer;
+            background: white;
+            animation: fade-in 0.5s cubic-bezier(0.5, 1.4, 0.5, 1.4) forwards;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+        }
+        .result-item:hover {
+            background: #f9f9f9;
+        }
+        .result-icon {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.5rem;
+        }
+        .result-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        /* Pagination Styling */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .pagination button {
+            margin: 0.25rem;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background: white;
+            cursor: pointer;
+        }
+        .pagination button:hover {
+            background: #f3f4f6;
+        }
+        .pagination button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        /* Modal Styling */
+        .modal {
+            animation: modal-enter 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            max-height: 90vh;
+            overflow: auto;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            transform-origin: center;
+        }
+        .modal.hidden {
+            animation: modal-exit 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+        /* Button */
+        #close-modal:hover {
+            transform: rotate(90deg);
+            transition: transform 0.3s ease-in-out;
+        }
+        /* Animations */
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes pop-in {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        /* Canvas for Stars */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        /* Hyperspace Effect */
+        @keyframes hyperspace {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0;
+                transform: scale(0.5) rotateY(180deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateY(360deg);
+            }
+        }
+        .hyperspace {
+            animation: hyperspace 1s ease-in-out forwards;
+        }
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        #results-modal {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow: auto;
+            transform-origin: center;
+        }
+        /* Code Block Styling */
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 1em;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-top: 1em;
+            display: none;
+            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+        }
+        .code-block.expanded {
+            display: block;
+        }
+        .expand-button {
+            cursor: pointer;
+            color: #2563EB;
+        }
+        .expand-button:hover {
+            text-decoration: underline;
+        }
+        /* Star Twinkling */
+        @keyframes twinkle {
+            from {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 1;
+            }
+            to {
+                opacity: 0.3;
+            }
+        }
+        /* Animated Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        /* JSON Syntax Highlighting */
+        pre.json-display {
+            background-color: #f5f5f5;
+            padding: 1em;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-height: 400px;
+        }
+        pre.json-display code {
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        pre.json-display .string {
+            color: #0bda51;
+        }
+        pre.json-display .number {
+            color: #ff6600;
+        }
+        pre.json-display .boolean {
+            color: #1c00cf;
+        }
+        pre.json-display .null {
+            color: magenta;
+        }
+        pre.json-display .key {
+            color: #d14;
+        }
+    
+        /* 
+         * Responsive fixes for a better mobile experience 
+         * We'll reduce font-sizes, allow scrolling, 
+         * and stack the input and button. 
+         */
+        @media (max-width: 640px) {
+            /* Let mobile scroll if needed */
+            body {
+                overflow: auto;
+                padding: 1rem;
+            }
+    
+            /* Scale down the main heading */
+            h1.text-5xl {
+                font-size: 2rem;
+                margin-bottom: 1rem;
+            }
+    
+            /* Stack the search input and button vertically */
+            .flex.items-center {
+                flex-direction: column;
+            }
+    
+            #search-input {
+                width: 100%;
+                margin-bottom: 0.75rem;
+                font-size: 1rem;
+                padding: 0.6rem 1rem;
+            }
+    
+            #search-button {
+                width: 100%;
+                margin-left: 0;
+                font-size: 1rem;
+                padding: 0.6rem 1rem;
+            }
+    
+            /* Make the modal occupy more of the screen, 
+               with some padding for breathing room */
+            #results-modal {
+                width: 90%;
+                margin: 2rem auto;
+                max-height: calc(100vh - 4rem);
+                border-radius: 1rem;
+                padding: 1rem;
+            }
+    
+            /* Adjust large text in the modal */
+            #results-modal h2.text-4xl {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+    
+            /* Make result items more compact */
+            .result-item {
+                padding: 0.75rem;
+            }
+    
+            /* Pagination buttons */
+            .pagination button {
+                padding: 0.4rem 0.7rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    
 </head>  
 <body class="flex items-center justify-center min-h-screen">  
     <!-- Canvas for Stars -->  
@@ -329,7 +624,11 @@
     <!-- Search Container -->  
     <div class="text-center w-full max-w-xl">  
         <h1 class="text-5xl font-extrabold text-white mb-8 tracking-wide animate-bounce">  
-            Search the Universe <img src="https://bulloch.solutions/wp-content/uploads/2024/08/home-hero.png" style="width:5rem; float: right; margin-top: -1em;" />  
+            Search <span class="text-orange-500">differently.</span>
+            <img  
+                src="https://bulloch.solutions/wp-content/uploads/2024/08/home-hero.png"  
+                style="width:5rem; float: right; margin-top: -1em;"  
+            />  
         </h1>  
         <div class="flex items-center">  
             <input  
@@ -373,7 +672,12 @@
   
             <!-- Textarea for user input -->  
             <div id="user-input-section" class="w-full mt-4 hidden">  
-                <textarea id="user-textarea" class="w-full p-4 border rounded-lg" rows="5" placeholder="Enter your input here..."></textarea>  
+                <textarea  
+                    id="user-textarea"  
+                    class="w-full p-4 border rounded-lg"  
+                    rows="5"  
+                    placeholder="Enter your input here..."  
+                ></textarea>  
                 <button  
                     id="submit-ai-button"  
                     class="mt-4 px-6 py-4 text-lg rounded-full bg-green-500 text-white shadow-lg hover:bg-green-600"  
@@ -384,7 +688,6 @@
   
             <!-- Display AI Response -->  
             <div id="ai-response-display" class="w-full mt-4"></div>  
-  
         </div>  
     </div>  
   
@@ -500,7 +803,9 @@
             totalPages = 1;  
         });  
   
-        // Create context  
+        // ============================
+        // CREATE CONTEXT USING JINA
+        // ============================
         createContextButton.addEventListener('click', () => {  
             const selectedUrls = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))  
                 .map(checkbox => checkbox.value);  
@@ -510,22 +815,46 @@
                 return;  
             }  
   
-            fetch('https://ranfysvalle02--oblivious-web-create-ctx.modal.run', {  
-                method: 'POST',  
-                headers: {  
-                    'Content-Type': 'application/json',  
-                },  
-                body: JSON.stringify({ urls: selectedUrls }),  
-            })  
-            .then(response => response.json())  
-            .then(data => {  
-                // Display the context in the modal  
-                const contextHtml = data.context.map((item, idx) => `  
+            // Hard-coded API key -- only for testing/demo!  
+            const JINA_API_KEY = "jina_708b8f1519364383a80dadfe80d2c7f3W7Ze7227kaweVtlSDf4QrQgCv6wK";  
+  
+            // For each selected URL, request content using the Jina shortlink
+            // We'll gather them all with Promise.all.  
+            Promise.all(  
+                selectedUrls.map(url => {  
+                    return fetch(`https://r.jina.ai/${encodeURIComponent(url)}`, {  
+                        method: 'GET',  
+                        headers: {  
+                            'Authorization': `Bearer ${JINA_API_KEY}`,  
+                            'X-Timeout': '180'  
+                        }  
+                    })  
+                    .then(response => {  
+                        if (!response.ok) {  
+                            throw new Error(`Failed to fetch ${url}. Status: ${response.status}`);  
+                        }  
+                        return response.text();  
+                    })  
+                    .then(text => ({ url, text }))  
+                    .catch(err => ({ url, error: err.message }));  
+                })  
+            )  
+            .then(results => {  
+                // Build the same kind of HTML you had before  
+                const contextHtml = results.map((item, idx) => `  
                     <div class="context-item">  
                         <h3 class="text-lg font-bold mt-4">${item.url}</h3>  
-                        ${item.error ? `<p class="text-red-500">${item.error}</p>` : `  
-                        <p class="expand-button text-blue-600 underline" data-index="${idx}">Show Context ▼</p>  
-                        <pre class="code-block" id="code-block-${idx}"><code>${item.text}</code></pre>`}  
+                        ${
+                            item.error
+                                ? `<p class="text-red-500">${item.error}</p>`
+                                : `  
+                                <p class="expand-button text-blue-600 underline" data-index="${idx}">
+                                    Show Context ▼
+                                </p>  
+                                <pre class="code-block" id="code-block-${idx}">
+                                    <code>${item.text}</code>
+                                </pre>`
+                        }
                     </div>  
                 `).join('');  
                 document.getElementById('context-display').innerHTML = contextHtml;  
@@ -572,6 +901,8 @@
                 contextData.push({ url, text });  
             });  
   
+            // Example usage with your existing AI endpoint.  
+            // Adjust as needed for your actual AI backend.  
             fetch('https://ranfysvalle02--oblivious-web-api-ai.modal.run', {  
                 method: 'POST',  
                 headers: {  
@@ -584,7 +915,6 @@
             })  
             .then(response => response.json())  
             .then(data => {  
-                // Display the AI response with syntax highlighting  
                 aiResponseDisplay.innerHTML = `<pre class="json-display"><code>${syntaxHighlight(data)}</code></pre>`;  
             })  
             .catch(error => {  
@@ -696,7 +1026,6 @@
             const y = e.clientY / window.innerHeight;  
             document.body.style.background = `linear-gradient(135deg, rgba(${106 + x * 50}, 17, 203, 1) 0%, rgba(${37 + y * 50}, 117, 252, 1) 100%)`;  
         });  
-  
     </script>  
 </body>  
-</html>  
+</html>

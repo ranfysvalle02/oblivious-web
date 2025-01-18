@@ -18,7 +18,7 @@ image = modal.Image.debian_slim().pip_install(
 
 app = modal.App(name="oblivious-web", image=image)
 
-@app.function(gpu="any", secrets=[modal.Secret.from_dotenv()])
+@app.function(gpu="any")
 @modal.web_endpoint(method="GET", docs=True)
 def search(query: str = "", page: int = 1):
     """
@@ -80,43 +80,7 @@ def search(query: str = "", page: int = 1):
         return {"error": str(e)}
 
 
-@app.function(gpu="any", secrets=[modal.Secret.from_dotenv()])
-@modal.web_endpoint(method="POST", docs=True)
-def create_ctx(data: dict):
-    """
-    Mimics the original Flask `/create_ctx` POST route.
-    Expects `{"urls": [...]}`.
-    Returns JSON with text content for each URL.
-    """
-    import os
-    JINA_API_KEY = os.getenv("JINA_API_KEY")
-    urls = data.get("urls", [])
-    context_data = []
-
-    for url in urls:
-        try:
-            # Use Jina shortlink
-            headers = {
-                "Authorization": f"Bearer {JINA_API_KEY}",
-                "X-Timeout": "180"
-            }
-            response = requests.get(f"https://r.jina.ai/{url}", headers=headers)
-            soup = BeautifulSoup(response.content, "html.parser")
-            
-            # Remove script and style elements
-            for script in soup(["script", "style"]):
-                script.extract()
-            
-            text = soup.get_text(separator=" ", strip=True)
-            
-            context_data.append({"url": url, "text": text})
-        except Exception as e:
-            context_data.append({"url": url, "error": str(e)})
-    
-    return {"context": context_data}
-
-
-@app.function(gpu="any", secrets=[modal.Secret.from_dotenv()])
+@app.function(gpu="any")
 @modal.web_endpoint(method="POST", docs=True)
 def api_ai(data: dict):
     """

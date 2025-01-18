@@ -8,8 +8,6 @@ import os
   
 app = Flask(__name__)  
 
-JINA_API_KEY = os.getenv('JINA_API_KEY')
-
 # Cache to store search results temporarily  
 search_cache = {}  
   
