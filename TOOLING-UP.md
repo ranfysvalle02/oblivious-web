@@ -4,9 +4,19 @@
 
 Today’s AI ecosystem is chock-full of clever solutions for automating tasks, sifting through data, and generating content—sometimes so seamlessly that we forget there’s a virtual puppet master pulling the strings. In the realm of “agentic workflows” (where AI models delegate tasks to “tools” based on a high-level goal), the allure of convenience often overshadows an important question: *Who’s truly in the driver’s seat?*
 
----
+# [Agents are not Enough](https://arxiv.org/html/2412.16241v1)
+
+## Historical Limitations of AI Agents  
+   
+The evolution of AI agents can be divided into five distinct eras: symbolic AI agents, expert systems, reactive agents, multi-agent systems, and cognitive architectures. Throughout these stages, agents have faced significant challenges such as lack of generalization, scalability issues, coordination difficulties, brittleness, and ethical concerns. They often required extensive manual programming and struggled to adapt to unexpected situations, limiting their applicability across various domains.  
+   
+## Technical Challenges in Agent Development  
+   
+The technical hurdles encountered by AI agents are multifaceted. Their reliance on predefined rules limits their ability to generalize across domains, while scalability issues arise as tasks grow more complex. Coordination in multi-agent systems often leads to inefficiencies, and agents frequently falter when faced with unforeseen scenarios due to a lack of robustness. Ethical and safety concerns also persist, as agents can make biased or harmful decisions without adequate oversight.  
+
 
 ### Biases Hiding in Plain Sight
+
 When an agentic workflow relies on tools like custom DuckDuckGo wrappers (like `DDGS`) - it’s easy to assume that the system neutrally pulls the “best” search results or takes the “most logical” next step. But in reality, each tool has its own internal logic, biases, and data sources. These biases may be as subtle as favoring established tech blogs over niche research papers or as glaring as mixing up two completely unrelated topics. The problem is compounded when an agentic AI can’t easily explain *why* it chose certain results over others—leading us to trust it without question.
 
 ---
