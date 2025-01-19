@@ -25,7 +25,7 @@ app = modal.App(name="oblivious-web", image=image)
 
 @app.function(gpu="any")
 @modal.web_endpoint(method="GET", docs=True)
-def search(query: str = "", page: int = 1):
+def search(query: str = "", page: int = 1, region: str = ""):
     """
     Mimics the original Flask `/search` route.
     Query params: ?query=some+search&page=1
@@ -41,11 +41,20 @@ def search(query: str = "", page: int = 1):
         # Perform the DuckDuckGo search
         ddgs = DDGS()
         max_results = 30  # Limit total results to 30
-        search_results = ddgs.text(
-            query,
-            safesearch="Moderate",
-            max_results=max_results,
-        )
+        search_results = []
+        if not region:
+            search_results = ddgs.text(
+                query,
+                safesearch="Moderate",
+                max_results=max_results,
+            )
+        else:
+            search_results = ddgs.text(
+                query,
+                safesearch="Moderate",
+                max_results=max_results,
+                region=region,
+            )
         results_list = list(search_results)
 
         total_results = len(results_list)
