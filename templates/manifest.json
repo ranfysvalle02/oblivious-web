@@ -1,1 +1,25 @@
-
+{  
+  "name": "oblivious-web",  
+  "short_name": "oblivious-web",  
+  "description": "Experience the web differently.",  
+  "start_url": "./index.html",  
+  "scope": ".",  
+  "display": "standalone",  
+  "background_color": "#f0f4f8",  
+  "theme_color": "#f0f4f8",  
+  "orientation": "portrait",  
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "96x96 128x128 256x256"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "257x257"
+    }]
+}  
