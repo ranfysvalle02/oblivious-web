@@ -5,7 +5,140 @@
     <meta charset="UTF-8">    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">    
     <title>Search Experience</title>    
-    <script src="https://cdn.tailwindcss.com"></script>    
+    <script src="https://cdn.tailwindcss.com"></script>   
+    <script>
+        // 1. Define an array of regions with their respective codes and labels
+        const regions = [
+            { value: 'xa-ar', text: 'Arabia' },
+            { value: 'xa-en', text: 'Arabia (en)' },
+            { value: 'ar-es', text: 'Argentina' },
+            { value: 'au-en', text: 'Australia' },
+            { value: 'at-de', text: 'Austria' },
+            { value: 'be-fr', text: 'Belgium (fr)' },
+            { value: 'be-nl', text: 'Belgium (nl)' },
+            { value: 'br-pt', text: 'Brazil' },
+            { value: 'bg-bg', text: 'Bulgaria' },
+            { value: 'ca-en', text: 'Canada' },
+            { value: 'ca-fr', text: 'Canada (fr)' },
+            { value: 'ct-ca', text: 'Catalan' },
+            { value: 'cl-es', text: 'Chile' },
+            { value: 'cn-zh', text: 'China' },
+            { value: 'co-es', text: 'Colombia' },
+            { value: 'hr-hr', text: 'Croatia' },
+            { value: 'cz-cs', text: 'Czech Republic' },
+            { value: 'dk-da', text: 'Denmark' },
+            { value: 'ee-et', text: 'Estonia' },
+            { value: 'fi-fi', text: 'Finland' },
+            { value: 'fr-fr', text: 'France' },
+            { value: 'de-de', text: 'Germany' },
+            { value: 'gr-el', text: 'Greece' },
+            { value: 'hk-tzh', text: 'Hong Kong' },
+            { value: 'hu-hu', text: 'Hungary' },
+            { value: 'in-en', text: 'India' },
+            { value: 'id-id', text: 'Indonesia' },
+            { value: 'id-en', text: 'Indonesia (en)' },
+            { value: 'ie-en', text: 'Ireland' },
+            { value: 'il-he', text: 'Israel' },
+            { value: 'it-it', text: 'Italy' },
+            { value: 'jp-jp', text: 'Japan' },
+            { value: 'kr-kr', text: 'Korea' },
+            { value: 'lv-lv', text: 'Latvia' },
+            { value: 'lt-lt', text: 'Lithuania' },
+            { value: 'xl-es', text: 'Latin America' },
+            { value: 'my-ms', text: 'Malaysia' },
+            { value: 'my-en', text: 'Malaysia (en)' },
+            { value: 'mx-es', text: 'Mexico' },
+            { value: 'nl-nl', text: 'Netherlands' },
+            { value: 'nz-en', text: 'New Zealand' },
+            { value: 'no-no', text: 'Norway' },
+            { value: 'pe-es', text: 'Peru' },
+            { value: 'ph-en', text: 'Philippines' },
+            { value: 'ph-tl', text: 'Philippines (tl)' },
+            { value: 'pl-pl', text: 'Poland' },
+            { value: 'pt-pt', text: 'Portugal' },
+            { value: 'ro-ro', text: 'Romania' },
+            { value: 'ru-ru', text: 'Russia' },
+            { value: 'sg-en', text: 'Singapore' },
+            { value: 'sk-sk', text: 'Slovak Republic' },
+            { value: 'sl-sl', text: 'Slovenia' },
+            { value: 'za-en', text: 'South Africa' },
+            { value: 'es-es', text: 'Spain' },
+            { value: 'se-sv', text: 'Sweden' },
+            { value: 'ch-de', text: 'Switzerland (de)' },
+            { value: 'ch-fr', text: 'Switzerland (fr)' },
+            { value: 'ch-it', text: 'Switzerland (it)' },
+            { value: 'tw-tzh', text: 'Taiwan' },
+            { value: 'th-th', text: 'Thailand' },
+            { value: 'tr-tr', text: 'Turkey' },
+            { value: 'ua-uk', text: 'Ukraine' },
+            { value: 'uk-en', text: 'United Kingdom' },
+            { value: 'us-en', text: 'United States' },  // <-- We'll default to this
+            { value: 'ue-es', text: 'United States (es)' },
+            { value: 've-es', text: 'Venezuela' },
+            { value: 'vn-vi', text: 'Vietnam' },
+            { value: 'wt-wt', text: 'No region' }
+        ];
+
+        /**
+         * Creates a label and a dropdown (<select>) of regions inside the specified <div>.
+         * Defaults to "United States" (us-en).
+         *
+         * @param {string} divId - The ID of the div to replace with the label and dropdown.
+         * @param {function} [onChange] - An optional callback to invoke when the dropdown value changes.
+         * @returns {HTMLSelectElement} The created <select> element (so you can read .value anytime).
+         */
+        function createRegionDropdown(divId, onChange) {
+            const container = document.getElementById(divId);
+            if (!container) {
+            console.warn(`No element found with ID "${divId}"`);
+            return null;
+            }
+
+            // Clear the container first
+            container.innerHTML = '';
+
+            // Create a label
+            const label = document.createElement('label');
+            label.textContent = 'Select a Region: ';
+            
+            // Create the <select> element
+            const select = document.createElement('select');
+            
+            // Populate the <select> with <option> elements
+            regions.forEach(region => {
+            const option = document.createElement('option');
+            option.value = region.value;
+            option.textContent = region.text;
+            select.appendChild(option);
+            });
+
+            // Set default to US (value='us-en')
+            select.value = 'us-en';
+
+            // If an onChange callback is provided, attach it
+            if (typeof onChange === 'function') {
+            select.addEventListener('change', (e) => {
+                onChange(e.target.value);
+            });
+            }
+
+            // Append label and select to container
+            container.appendChild(label);
+            container.appendChild(select);
+
+            // Return the select so you can easily get the current value
+            return select;
+        }
+
+        // Example usage:
+        // const dropdown = createRegionDropdown('region-container', (selectedValue) => {
+        //   console.log('Selected region:', selectedValue);
+        // });
+        // 
+        // // You can also get the value directly anytime:
+        // // console.log(dropdown.value);
+
+    </script> 
     <style>    
         /* Background Gradient */    
         body {    
@@ -342,6 +475,11 @@
                 font-size: 0.9rem;  
             }  
         }  
+        #region-container label{
+            color: white;
+            font-weight: bold;
+            letter-spacing: 0.25rem;
+        }
     </style>    
 </head>    
 <body class="flex items-center justify-center min-h-screen">    
@@ -350,13 +488,15 @@
   
     <!-- Search Container -->    
     <div class="text-center w-full max-w-xl">    
-        <h1 class="text-5xl font-extrabold text-white mb-8 tracking-wide animate-bounce">    
+        <img    
+        class="animate-bounce"
+        src="https://cdn-icons-png.freepik.com/512/6725/6725867.png"    
+        style="width:5rem; float: right; margin-top: -1em;"    
+    />  
+        <h2 class="text-5xl font-extrabold text-white mb-8 tracking-wide animate-bounce">    
             Search <span class="text-orange-500">differently.</span>  
-            <img    
-                src="https://cdn-icons-png.freepik.com/512/6725/6725867.png"    
-                style="width:5rem; float: right; margin-top: -1em;"    
-            />    
-        </h1>    
+             
+        </h2>    
         <div class="flex items-center">    
             <input    
                 type="text"    
@@ -371,7 +511,11 @@
                 Search    
             </button>    
             <div id="loading-spinner" class="spinner hidden ml-4"></div>    
-        </div>    
+            
+        </div>  
+        <br />
+        <br />
+        <div id="region-container"></div>  
     </div>    
   
     <!-- Results Modal -->    
@@ -473,7 +617,14 @@
                     loadingSpinner.classList.remove('hidden');    
                 }    
                 currentQuery = input.value;    
-                fetch(`https://ranfysvalle02--oblivious-web-search.modal.run?query=${encodeURIComponent(currentQuery)}&page=${page}`)    
+                // Target the div by its ID
+                const myDiv = document.getElementById('region-container');
+                // Locate the select element within the div
+                const selectElement = myDiv.querySelector('select');
+                // Get the selected value
+                const selectedValueRegion = selectElement.value;
+
+                fetch(`https://ranfysvalle02--oblivious-web-search.modal.run?region=${selectedValueRegion}&query=${encodeURIComponent(currentQuery)}&page=${page}`)    
                     .then((res) => res.json())    
                     .then((data) => {    
                         if (data.results) {    
@@ -774,5 +925,10 @@
             document.body.style.background = `linear-gradient(135deg, rgba(${106 + x * 50}, 17, 203, 1) 0%, rgba(${37 + y * 50}, 117, 252, 1) 100%)`;    
         });    
     </script>    
+    <script>
+ createRegionDropdown('region-container', function(selectedValue) {
+   console.log("Selected region: ", selectedValue);
+ });
+    </script>
 </body>    
 </html>  
