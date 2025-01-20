@@ -1,935 +1,1161 @@
-<!DOCTYPE html>    
-<html lang="en">    
-<head>    
-    <link rel="manifest" href="manifest.json">
-    <!-- Metadata and Tailwind CSS -->    
-    <meta charset="UTF-8">    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
-    <title>oblivious-web v0.1</title>    
-    <script src="https://cdn.tailwindcss.com"></script>   
-    <script>
-        // 1. Define an array of regions with their respective codes and labels
-        const regions = [
-            { value: 'xa-ar', text: 'Arabia' },
-            { value: 'xa-en', text: 'Arabia (en)' },
-            { value: 'ar-es', text: 'Argentina' },
-            { value: 'au-en', text: 'Australia' },
-            { value: 'at-de', text: 'Austria' },
-            { value: 'be-fr', text: 'Belgium (fr)' },
-            { value: 'be-nl', text: 'Belgium (nl)' },
-            { value: 'br-pt', text: 'Brazil' },
-            { value: 'bg-bg', text: 'Bulgaria' },
-            { value: 'ca-en', text: 'Canada' },
-            { value: 'ca-fr', text: 'Canada (fr)' },
-            { value: 'ct-ca', text: 'Catalan' },
-            { value: 'cl-es', text: 'Chile' },
-            { value: 'cn-zh', text: 'China' },
-            { value: 'co-es', text: 'Colombia' },
-            { value: 'hr-hr', text: 'Croatia' },
-            { value: 'cz-cs', text: 'Czech Republic' },
-            { value: 'dk-da', text: 'Denmark' },
-            { value: 'ee-et', text: 'Estonia' },
-            { value: 'fi-fi', text: 'Finland' },
-            { value: 'fr-fr', text: 'France' },
-            { value: 'de-de', text: 'Germany' },
-            { value: 'gr-el', text: 'Greece' },
-            { value: 'hk-tzh', text: 'Hong Kong' },
-            { value: 'hu-hu', text: 'Hungary' },
-            { value: 'in-en', text: 'India' },
-            { value: 'id-id', text: 'Indonesia' },
-            { value: 'id-en', text: 'Indonesia (en)' },
-            { value: 'ie-en', text: 'Ireland' },
-            { value: 'il-he', text: 'Israel' },
-            { value: 'it-it', text: 'Italy' },
-            { value: 'jp-jp', text: 'Japan' },
-            { value: 'kr-kr', text: 'Korea' },
-            { value: 'lv-lv', text: 'Latvia' },
-            { value: 'lt-lt', text: 'Lithuania' },
-            { value: 'xl-es', text: 'Latin America' },
-            { value: 'my-ms', text: 'Malaysia' },
-            { value: 'my-en', text: 'Malaysia (en)' },
-            { value: 'mx-es', text: 'Mexico' },
-            { value: 'nl-nl', text: 'Netherlands' },
-            { value: 'nz-en', text: 'New Zealand' },
-            { value: 'no-no', text: 'Norway' },
-            { value: 'pe-es', text: 'Peru' },
-            { value: 'ph-en', text: 'Philippines' },
-            { value: 'ph-tl', text: 'Philippines (tl)' },
-            { value: 'pl-pl', text: 'Poland' },
-            { value: 'pt-pt', text: 'Portugal' },
-            { value: 'ro-ro', text: 'Romania' },
-            { value: 'ru-ru', text: 'Russia' },
-            { value: 'sg-en', text: 'Singapore' },
-            { value: 'sk-sk', text: 'Slovak Republic' },
-            { value: 'sl-sl', text: 'Slovenia' },
-            { value: 'za-en', text: 'South Africa' },
-            { value: 'es-es', text: 'Spain' },
-            { value: 'se-sv', text: 'Sweden' },
-            { value: 'ch-de', text: 'Switzerland (de)' },
-            { value: 'ch-fr', text: 'Switzerland (fr)' },
-            { value: 'ch-it', text: 'Switzerland (it)' },
-            { value: 'tw-tzh', text: 'Taiwan' },
-            { value: 'th-th', text: 'Thailand' },
-            { value: 'tr-tr', text: 'Turkey' },
-            { value: 'ua-uk', text: 'Ukraine' },
-            { value: 'uk-en', text: 'United Kingdom' },
-            { value: 'us-en', text: 'United States' },  // <-- We'll default to this
-            { value: 'ue-es', text: 'United States (es)' },
-            { value: 've-es', text: 'Venezuela' },
-            { value: 'vn-vi', text: 'Vietnam' },
-            { value: 'wt-wt', text: 'No region' }
-        ];
-
-        /**
-         * Creates a label and a dropdown (<select>) of regions inside the specified <div>.
-         * Defaults to "United States" (us-en).
-         *
-         * @param {string} divId - The ID of the div to replace with the label and dropdown.
-         * @param {function} [onChange] - An optional callback to invoke when the dropdown value changes.
-         * @returns {HTMLSelectElement} The created <select> element (so you can read .value anytime).
-         */
-        function createRegionDropdown(divId, onChange) {
-            const container = document.getElementById(divId);
-            if (!container) {
-            console.warn(`No element found with ID "${divId}"`);
-            return null;
-            }
-
-            // Clear the container first
-            container.innerHTML = '';
-
-            // Create a label
-            const label = document.createElement('label');
-            label.textContent = 'Select a Region: ';
-            
-            // Create the <select> element
-            const select = document.createElement('select');
-            
-            // Populate the <select> with <option> elements
-            regions.forEach(region => {
-            const option = document.createElement('option');
-            option.value = region.value;
-            option.textContent = region.text;
-            select.appendChild(option);
-            });
-
-            // Set default to US (value='us-en')
-            select.value = 'us-en';
-
-            // If an onChange callback is provided, attach it
-            if (typeof onChange === 'function') {
-            select.addEventListener('change', (e) => {
-                onChange(e.target.value);
-            });
-            }
-
-            // Append label and select to container
-            container.appendChild(label);
-            container.appendChild(select);
-
-            // Return the select so you can easily get the current value
-            return select;
-        }
-
-        // Example usage:
-        // const dropdown = createRegionDropdown('region-container', (selectedValue) => {
-        //   console.log('Selected region:', selectedValue);
-        // });
-        // 
-        // // You can also get the value directly anytime:
-        // // console.log(dropdown.value);
-
-    </script> 
-    <style>    
-        /* Background Gradient */    
-        body {    
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);    
-            font-family: 'Inter', sans-serif;    
-            overflow: hidden;    
-            transition: background 0.5s;    
+<!DOCTYPE html>        
+<html lang="en">        
+<head>        
+    <link rel="manifest" href="manifest.json">    
+    <!-- Metadata and Tailwind CSS -->        
+    <meta charset="UTF-8">        
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">        
+    <title>oblivious-web v0.1</title>        
+    <script src="https://cdn.tailwindcss.com"></script>       
+    <script>    
+        // Regions array and createRegionDropdown function    
+        const regions = [    
+            { value: 'xa-ar', text: 'Arabia' },    
+            { value: 'xa-en', text: 'Arabia (en)' },    
+            { value: 'ar-es', text: 'Argentina' },    
+            { value: 'au-en', text: 'Australia' },    
+            { value: 'at-de', text: 'Austria' },    
+            { value: 'be-fr', text: 'Belgium (fr)' },    
+            { value: 'be-nl', text: 'Belgium (nl)' },    
+            { value: 'br-pt', text: 'Brazil' },    
+            { value: 'bg-bg', text: 'Bulgaria' },    
+            { value: 'ca-en', text: 'Canada' },    
+            { value: 'ca-fr', text: 'Canada (fr)' },    
+            { value: 'ct-ca', text: 'Catalan' },    
+            { value: 'cl-es', text: 'Chile' },    
+            { value: 'cn-zh', text: 'China' },    
+            { value: 'co-es', text: 'Colombia' },    
+            { value: 'hr-hr', text: 'Croatia' },    
+            { value: 'cz-cs', text: 'Czech Republic' },    
+            { value: 'dk-da', text: 'Denmark' },    
+            { value: 'ee-et', text: 'Estonia' },    
+            { value: 'fi-fi', text: 'Finland' },    
+            { value: 'fr-fr', text: 'France' },    
+            { value: 'de-de', text: 'Germany' },    
+            { value: 'gr-el', text: 'Greece' },    
+            { value: 'hk-tzh', text: 'Hong Kong' },    
+            { value: 'hu-hu', text: 'Hungary' },    
+            { value: 'in-en', text: 'India' },    
+            { value: 'id-id', text: 'Indonesia' },    
+            { value: 'id-en', text: 'Indonesia (en)' },    
+            { value: 'ie-en', text: 'Ireland' },    
+            { value: 'il-he', text: 'Israel' },    
+            { value: 'it-it', text: 'Italy' },    
+            { value: 'jp-jp', text: 'Japan' },    
+            { value: 'kr-kr', text: 'Korea' },    
+            { value: 'lv-lv', text: 'Latvia' },    
+            { value: 'lt-lt', text: 'Lithuania' },    
+            { value: 'xl-es', text: 'Latin America' },    
+            { value: 'my-ms', text: 'Malaysia' },    
+            { value: 'my-en', text: 'Malaysia (en)' },    
+            { value: 'mx-es', text: 'Mexico' },    
+            { value: 'nl-nl', text: 'Netherlands' },    
+            { value: 'nz-en', text: 'New Zealand' },    
+            { value: 'no-no', text: 'Norway' },    
+            { value: 'pe-es', text: 'Peru' },    
+            { value: 'ph-en', text: 'Philippines' },    
+            { value: 'ph-tl', text: 'Philippines (tl)' },    
+            { value: 'pl-pl', text: 'Poland' },    
+            { value: 'pt-pt', text: 'Portugal' },    
+            { value: 'ro-ro', text: 'Romania' },    
+            { value: 'ru-ru', text: 'Russia' },    
+            { value: 'sg-en', text: 'Singapore' },    
+            { value: 'sk-sk', text: 'Slovak Republic' },    
+            { value: 'sl-sl', text: 'Slovenia' },    
+            { value: 'za-en', text: 'South Africa' },    
+            { value: 'es-es', text: 'Spain' },    
+            { value: 'se-sv', text: 'Sweden' },    
+            { value: 'ch-de', text: 'Switzerland (de)' },    
+            { value: 'ch-fr', text: 'Switzerland (fr)' },    
+            { value: 'ch-it', text: 'Switzerland (it)' },    
+            { value: 'tw-tzh', text: 'Taiwan' },    
+            { value: 'th-th', text: 'Thailand' },    
+            { value: 'tr-tr', text: 'Turkey' },    
+            { value: 'ua-uk', text: 'Ukraine' },    
+            { value: 'uk-en', text: 'United Kingdom' },    
+            { value: 'us-en', text: 'United States' },    
+            { value: 'ue-es', text: 'United States (es)' },    
+            { value: 've-es', text: 'Venezuela' },    
+            { value: 'vn-vi', text: 'Vietnam' },    
+            { value: 'wt-wt', text: 'No region' }    
+        ];   
+  
+        function createRegionDropdown(divId, onChange) {    
+            const container = document.getElementById(divId);    
+            if (!container) {    
+            console.warn(`No element found with ID "${divId}"`);    
+            return null;    
+            }    
+  
+            // Clear the container first    
+            container.innerHTML = '';    
+  
+            // Create a label    
+            const label = document.createElement('label');    
+            label.textContent = 'Select a Region: ';    
+                  
+            // Create the <select> element    
+            const select = document.createElement('select');    
+                  
+            // Populate the <select> with <option> elements    
+            regions.forEach(region => {    
+            const option = document.createElement('option');    
+            option.value = region.value;    
+            option.textContent = region.text;    
+            select.appendChild(option);    
+            });    
+  
+            // Set default to US (value='us-en')    
+            select.value = 'us-en';    
+  
+            // If an onChange callback is provided, attach it    
+            if (typeof onChange === 'function') {    
+            select.addEventListener('change', (e) => {    
+                onChange(e.target.value);    
+            });    
+            }    
+  
+            // Append label and select to container    
+            container.appendChild(label);    
+            container.appendChild(select);    
+  
+            // Return the select so you can easily get the current value    
+            return select;    
         }    
-        /* Search Input Styling */    
-        #search-input {    
-            animation: pop-in 1s cubic-bezier(0.5, 1.4, 0.5, 1.4);    
-            border: none;    
-            outline: none;    
-            background: linear-gradient(90deg, #fff, #f7f7f7);    
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);    
-            transition: all 0.3s ease-in-out;    
-        }    
-        #search-input:focus {    
-            transform: scale(1.05);    
-            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2);    
-        }    
-        /* Search Button Styling */    
-        #search-button {    
-            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);    
+  
+    </script>     
+    <style>        
+        /* Background Gradient */        
+        body {        
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);        
+            font-family: 'Inter', sans-serif;        
+            overflow: hidden;        
+            transition: background 0.5s;        
+        }        
+        /* Search Input Styling */        
+        #search-input {        
+            animation: pop-in 1s cubic-bezier(0.5, 1.4, 0.5, 1.4);        
+            border: none;        
+            outline: none;        
+            background: linear-gradient(90deg, #fff, #f7f7f7);        
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);        
+            transition: all 0.3s ease-in-out;        
+        }        
+        #search-input:focus {        
+            transform: scale(1.05);        
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2);        
+        }        
+        /* Search Button Styling */        
+        #search-button {        
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);        
+            color: white;        
+            padding: 0.75rem 1.5rem;        
+            border: none;        
+            border-radius: 9999px;        
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);        
+            transition: all 0.3s ease-in-out;        
+        }        
+        #search-button:hover {        
+            transform: scale(1.05);        
+            box-shadow: 0 8px 20px rgba(255, 126, 95, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2);        
+        }        
+        /* Modal Entrance and Exit Animations */        
+        @keyframes modal-enter {        
+            0% {        
+                opacity: 0;        
+                transform: scale(0.8) translateY(50%) rotateX(-90deg);        
+            }        
+            100% {        
+                opacity: 1;        
+                transform: scale(1) translateY(0%) rotateX(0deg);        
+            }        
+        }        
+        @keyframes modal-exit {        
+            0% {        
+                opacity: 1;        
+                transform: scale(1) translateY(0%) rotateX(0deg);        
+            }        
+            100% {        
+                opacity: 0;        
+                transform: scale(0.8) translateY(50%) rotateX(90deg);        
+            }        
+        }        
+        /* Search Results Styling */        
+        #results-list {        
+            width: 100%;        
+        }        
+        .result-item {        
+            transition: background 0.2s ease-in-out;        
+            cursor: pointer;        
+            background: white;        
+            animation: fade-in 0.5s cubic-bezier(0.5, 1.4, 0.5, 1.4) forwards;        
+            padding: 1rem;        
+            border-bottom: 1px solid #e5e7eb;        
+            display: flex;        
+            flex-direction: column;        
+        }        
+        .result-item:hover {        
+            background: #f9f9f9;        
+        }        
+        .result-icon {        
+            width: 1rem;        
+            height: 1rem;        
+            margin-right: 0.5rem;        
+        }        
+        .result-header {        
+            display: flex;        
+            align-items: center;        
+            margin-bottom: 0.5rem;        
+        }        
+        /* Pagination Styling */        
+        .pagination {        
+            display: flex;        
+            justify-content: center;        
+            align-items: center;        
+            margin-top: 1rem;        
+            flex-wrap: wrap;        
+        }        
+        .pagination button {        
+            margin: 0.25rem;        
+            padding: 0.5rem 0.75rem;        
+            border: 1px solid #d1d5db;        
+            border-radius: 0.375rem;        
+            background: white;        
+            cursor: pointer;        
+        }        
+        .pagination button:hover {        
+            background: #f3f4f6;        
+        }        
+        .pagination button.disabled {        
+            opacity: 0.5;        
+            cursor: not-allowed;        
+        }        
+        /* Modal Styling */        
+        .modal {        
+            animation: modal-enter 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;        
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);        
+            border-radius: 20px;        
+            max-height: 90vh;        
+            overflow: auto;        
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;        
+            transform-origin: center;        
+        }        
+        .modal.hidden {        
+            animation: modal-exit 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;        
+        }        
+        /* Button */        
+        #close-modal:hover, #close-modal-2:hover {        
+            transform: rotate(90deg);        
+            transition: transform 0.3s ease-in-out;        
+        }      
+        /* Animations */        
+        @keyframes fade-in {        
+            from {        
+                opacity: 0;        
+                transform: translateY(20px);        
+            }        
+            to {        
+                opacity: 1;        
+                transform: translateY(0);        
+            }        
+        }        
+        @keyframes pop-in {        
+            0% {        
+                transform: scale(0.8);        
+                opacity: 0;        
+            }        
+            100% {        
+                transform: scale(1);        
+                opacity: 1;        
+            }        
+        }        
+        /* Canvas for Stars */        
+        canvas {        
+            position: absolute;        
+            top: 0;        
+            left: 0;        
+            width: 100%;        
+            height: 100%;        
+            z-index: -1;        
+        }        
+        /* Hyperspace Effect */        
+        @keyframes hyperspace {        
+            0% {        
+                opacity: 1;        
+                transform: scale(1);        
+            }        
+            50% {        
+                opacity: 0;        
+                transform: scale(0.5) rotateY(180deg);        
+            }        
+            100% {        
+                opacity: 1;        
+                transform: scale(1) rotateY(360deg);        
+            }        
+        }        
+        .hyperspace {        
+            animation: hyperspace 1s ease-in-out forwards;        
+        }        
+        /* Loading Spinner */        
+        .spinner {        
+            border: 4px solid rgba(255, 255, 255, 0.3);        
+            border-top: 4px solid #fff;        
+            border-radius: 50%;        
+            width: 2rem;        
+            height: 2rem;        
+            animation: spin 1s linear infinite;        
+        }        
+        @keyframes spin {        
+            0% {        
+                transform: rotate(0deg);        
+            }        
+            100% {        
+                transform: rotate(360deg);        
+            }        
+        }        
+        #results-modal {        
+            background-color: white;        
+            border-radius: 20px;        
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);        
+            max-height: 90vh;        
+            overflow: auto;        
+            transform-origin: center;        
+        }        
+        /* Code Block Styling */        
+        .code-block {        
+            background-color: #f5f5f5;        
+            padding: 1em;        
+            border-radius: 5px;        
+            overflow-x: auto;        
+            margin-top: 1em;        
+            display: none;        
+            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;        
+        }        
+        .code-block.expanded {        
+            display: block;        
+        }        
+        .expand-button {        
+            cursor: pointer;        
+            color: #2563EB;        
+        }        
+        .expand-button:hover {        
+            text-decoration: underline;        
+        }        
+        /* Star Twinkling */        
+        @keyframes twinkle {        
+            from {        
+                opacity: 0.3;        
+            }        
+            50% {        
+                opacity: 1;        
+            }        
+            to {        
+                opacity: 0.3;        
+            }        
+        }        
+        /* Animated Scrollbar */        
+        ::-webkit-scrollbar {        
+            width: 8px;        
+        }        
+        ::-webkit-scrollbar-track {        
+            background: #f1f1f1;        
+        }        
+        ::-webkit-scrollbar-thumb {        
+            background: #888;        
+            border-radius: 4px;        
+        }        
+        ::-webkit-scrollbar-thumb:hover {        
+            background: #555;        
+        }        
+        /* JSON Syntax Highlighting */        
+        pre.json-display {        
+            background-color: #f5f5f5;        
+            padding: 1em;        
+            border-radius: 5px;        
+            overflow-x: auto;        
+            max-height: 400px;        
+        }        
+        pre.json-display code {        
+            font-family: monospace;        
+            font-size: 14px;        
+            line-height: 1.5;        
+        }        
+        pre.json-display .string {        
+            color: #0bda51;        
+        }        
+        pre.json-display .number {        
+            color: #ff6600;        
+        }        
+        pre.json-display .boolean {        
+            color: #1c00cf;        
+        }        
+        pre.json-display .null {        
+            color: magenta;        
+        }        
+        pre.json-display .key {        
+            color: #d14;        
+        }        
+        /* Responsive fixes for a better mobile experience */      
+        @media (max-width: 640px) {      
+            /* Let mobile scroll if needed */      
+            body {      
+                overflow: auto;      
+                padding: 1rem;      
+            }      
+            /* Scale down the main heading */      
+            h1.text-5xl {      
+                font-size: 2rem;      
+                margin-bottom: 1rem;      
+            }      
+            /* Stack the search input and button vertically */      
+            .flex.items-center {      
+                flex-direction: column;      
+            }      
+            #search-input {      
+                width: 100%;      
+                margin-bottom: 0.75rem;      
+                font-size: 1rem;      
+                padding: 0.6rem 1rem;      
+            }      
+            #search-button {      
+                width: 100%;      
+                margin-left: 0;      
+                font-size: 1rem;      
+                padding: 0.6rem 1rem;      
+            }      
+            /* Make the modal occupy more of the screen,       
+               with some padding for breathing room */      
+            #results-modal {      
+                width: 90%;      
+                margin: 2rem auto;      
+                max-height: calc(100vh - 4rem);      
+                border-radius: 1rem;      
+                padding: 1rem;      
+            }      
+            /* Adjust large text in the modal */      
+            #results-modal h2.text-4xl {      
+                font-size: 1.5rem;      
+                margin-bottom: 1rem;      
+            }      
+            /* Make result items more compact */      
+            .result-item {      
+                padding: 0.75rem;      
+            }      
+            /* Pagination buttons */      
+            .pagination button {      
+                padding: 0.4rem 0.7rem;      
+                font-size: 0.9rem;      
+            }      
+        }      
+        #region-container label{    
             color: white;    
-            padding: 0.75rem 1.5rem;    
-            border: none;    
-            border-radius: 9999px;    
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);    
-            transition: all 0.3s ease-in-out;    
+            font-weight: bold;    
+            letter-spacing: 0.25rem;    
         }    
-        #search-button:hover {    
-            transform: scale(1.05);    
-            box-shadow: 0 8px 20px rgba(255, 126, 95, 0.4), 0 4px 15px rgba(0, 0, 0, 0.2);    
-        }    
-        /* Modal Entrance and Exit Animations */    
-        @keyframes modal-enter {    
-            0% {    
-                opacity: 0;    
-                transform: scale(0.8) translateY(50%) rotateX(-90deg);    
-            }    
-            100% {    
-                opacity: 1;    
-                transform: scale(1) translateY(0%) rotateX(0deg);    
-            }    
-        }    
-        @keyframes modal-exit {    
-            0% {    
-                opacity: 1;    
-                transform: scale(1) translateY(0%) rotateX(0deg);    
-            }    
-            100% {    
-                opacity: 0;    
-                transform: scale(0.8) translateY(50%) rotateX(90deg);    
-            }    
-        }    
-        /* Search Results Styling */    
-        #results-list {    
-            width: 100%;    
-        }    
-        .result-item {    
-            transition: background 0.2s ease-in-out;    
-            cursor: pointer;    
-            background: white;    
-            animation: fade-in 0.5s cubic-bezier(0.5, 1.4, 0.5, 1.4) forwards;    
-            padding: 1rem;    
-            border-bottom: 1px solid #e5e7eb;    
-            display: flex;    
-            flex-direction: column;    
-        }    
-        .result-item:hover {    
-            background: #f9f9f9;    
-        }    
-        .result-icon {    
-            width: 1rem;    
-            height: 1rem;    
-            margin-right: 0.5rem;    
-        }    
-        .result-header {    
-            display: flex;    
-            align-items: center;    
-            margin-bottom: 0.5rem;    
-        }    
-        /* Pagination Styling */    
-        .pagination {    
-            display: flex;    
-            justify-content: center;    
-            align-items: center;    
-            margin-top: 1rem;    
-            flex-wrap: wrap;    
-        }    
-        .pagination button {    
-            margin: 0.25rem;    
-            padding: 0.5rem 0.75rem;    
-            border: 1px solid #d1d5db;    
-            border-radius: 0.375rem;    
-            background: white;    
-            cursor: pointer;    
-        }    
-        .pagination button:hover {    
-            background: #f3f4f6;    
-        }    
-        .pagination button.disabled {    
-            opacity: 0.5;    
-            cursor: not-allowed;    
-        }    
-        /* Modal Styling */    
-        .modal {    
-            animation: modal-enter 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;    
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);    
-            border-radius: 20px;    
-            max-height: 90vh;    
-            overflow: auto;    
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;    
-            transform-origin: center;    
-        }    
-        .modal.hidden {    
-            animation: modal-exit 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;    
-        }    
-        /* Button */    
-        #close-modal:hover {    
-            transform: rotate(90deg);    
-            transition: transform 0.3s ease-in-out;    
-        }    
-        /* Animations */    
-        @keyframes fade-in {    
-            from {    
-                opacity: 0;    
-                transform: translateY(20px);    
-            }    
-            to {    
-                opacity: 1;    
-                transform: translateY(0);    
-            }    
-        }    
-        @keyframes pop-in {    
-            0% {    
-                transform: scale(0.8);    
-                opacity: 0;    
-            }    
-            100% {    
-                transform: scale(1);    
-                opacity: 1;    
-            }    
-        }    
-        /* Canvas for Stars */    
-        canvas {    
-            position: absolute;    
-            top: 0;    
-            left: 0;    
-            width: 100%;    
-            height: 100%;    
-            z-index: -1;    
-        }    
-        /* Hyperspace Effect */    
-        @keyframes hyperspace {    
-            0% {    
-                opacity: 1;    
-                transform: scale(1);    
-            }    
-            50% {    
-                opacity: 0;    
-                transform: scale(0.5) rotateY(180deg);    
-            }    
-            100% {    
-                opacity: 1;    
-                transform: scale(1) rotateY(360deg);    
-            }    
-        }    
-        .hyperspace {    
-            animation: hyperspace 1s ease-in-out forwards;    
-        }    
-        /* Loading Spinner */    
-        .spinner {    
-            border: 4px solid rgba(255, 255, 255, 0.3);    
-            border-top: 4px solid #fff;    
-            border-radius: 50%;    
-            width: 2rem;    
-            height: 2rem;    
-            animation: spin 1s linear infinite;    
-        }    
-        @keyframes spin {    
-            0% {    
-                transform: rotate(0deg);    
-            }    
-            100% {    
-                transform: rotate(360deg);    
-            }    
-        }    
-        #results-modal {    
-            background-color: white;    
-            border-radius: 20px;    
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);    
-            max-height: 90vh;    
-            overflow: auto;    
-            transform-origin: center;    
-        }    
-        /* Code Block Styling */    
-        .code-block {    
-            background-color: #f5f5f5;    
-            padding: 1em;    
-            border-radius: 5px;    
-            overflow-x: auto;    
-            margin-top: 1em;    
-            display: none;    
-            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;    
-        }    
-        .code-block.expanded {    
-            display: block;    
-        }    
-        .expand-button {    
-            cursor: pointer;    
-            color: #2563EB;    
-        }    
-        .expand-button:hover {    
-            text-decoration: underline;    
-        }    
-        /* Star Twinkling */    
-        @keyframes twinkle {    
-            from {    
-                opacity: 0.3;    
-            }    
-            50% {    
-                opacity: 1;    
-            }    
-            to {    
-                opacity: 0.3;    
-            }    
-        }    
-        /* Animated Scrollbar */    
-        ::-webkit-scrollbar {    
-            width: 8px;    
-        }    
-        ::-webkit-scrollbar-track {    
-            background: #f1f1f1;    
-        }    
-        ::-webkit-scrollbar-thumb {    
-            background: #888;    
-            border-radius: 4px;    
-        }    
-        ::-webkit-scrollbar-thumb:hover {    
-            background: #555;    
-        }    
-        /* JSON Syntax Highlighting */    
-        pre.json-display {    
-            background-color: #f5f5f5;    
-            padding: 1em;    
-            border-radius: 5px;    
-            overflow-x: auto;    
-            max-height: 400px;    
-        }    
-        pre.json-display code {    
-            font-family: monospace;    
-            font-size: 14px;    
-            line-height: 1.5;    
-        }    
-        pre.json-display .string {    
-            color: #0bda51;    
-        }    
-        pre.json-display .number {    
-            color: #ff6600;    
-        }    
-        pre.json-display .boolean {    
-            color: #1c00cf;    
-        }    
-        pre.json-display .null {    
-            color: magenta;    
-        }    
-        pre.json-display .key {    
-            color: #d14;    
-        }    
-  
-        /*   
-         * Responsive fixes for a better mobile experience   
-         * We'll reduce font-sizes, allow scrolling,   
-         * and stack the input and button.   
-         */  
-        @media (max-width: 640px) {  
-            /* Let mobile scroll if needed */  
-            body {  
-                overflow: auto;  
-                padding: 1rem;  
+        /* New Animations and Styles for Hiding Search Results and Showing Loading GIF */  
+        @keyframes hideAnimation {  
+            0% {  
+                opacity: 1;  
+                transform: translateY(0%);  
             }  
-  
-            /* Scale down the main heading */  
-            h1.text-5xl {  
-                font-size: 2rem;  
-                margin-bottom: 1rem;  
-            }  
-  
-            /* Stack the search input and button vertically */  
-            .flex.items-center {  
-                flex-direction: column;  
-            }  
-  
-            #search-input {  
-                width: 100%;  
-                margin-bottom: 0.75rem;  
-                font-size: 1rem;  
-                padding: 0.6rem 1rem;  
-            }  
-  
-            #search-button {  
-                width: 100%;  
-                margin-left: 0;  
-                font-size: 1rem;  
-                padding: 0.6rem 1rem;  
-            }  
-  
-            /* Make the modal occupy more of the screen,   
-               with some padding for breathing room */  
-            #results-modal {  
-                width: 90%;  
-                margin: 2rem auto;  
-                max-height: calc(100vh - 4rem);  
-                border-radius: 1rem;  
-                padding: 1rem;  
-            }  
-  
-            /* Adjust large text in the modal */  
-            #results-modal h2.text-4xl {  
-                font-size: 1.5rem;  
-                margin-bottom: 1rem;  
-            }  
-  
-            /* Make result items more compact */  
-            .result-item {  
-                padding: 0.75rem;  
-            }  
-  
-            /* Pagination buttons */  
-            .pagination button {  
-                padding: 0.4rem 0.7rem;  
-                font-size: 0.9rem;  
+            100% {  
+                opacity: 0;  
+                transform: translateY(-50%);  
             }  
         }  
-        #region-container label{
-            color: white;
-            font-weight: bold;
-            letter-spacing: 0.25rem;
-        }
-    </style>    
-</head>    
-<body class="flex items-center justify-center min-h-screen">    
-    <!-- Canvas for Stars -->    
-    <canvas id="stars"></canvas>    
+        .hide-with-animation {  
+            animation: hideAnimation 1s forwards;  
+        }  
+        @keyframes showLoading {  
+            0% {  
+                opacity: 0;  
+                transform: scale(0.8);  
+            }  
+            100% {  
+                opacity: 1;  
+                transform: scale(1);  
+            }  
+        }  
+        .show-loading {  
+            display: flex !important;  
+            animation: showLoading 1s forwards;  
+        }  
+        @keyframes hideLoading {  
+            0% {  
+                opacity: 1;  
+                transform: scale(1);  
+            }  
+            100% {  
+                opacity: 0;  
+                transform: scale(0.8);  
+            }  
+        }  
+        .hide-loading {  
+            animation: hideLoading 1s forwards;  
+        }  
+        @keyframes showAnimation {  
+            0% {  
+                opacity: 0;  
+                transform: translateY(50%);  
+            }  
+            100% {  
+                opacity: 1;  
+                transform: translateY(0%);  
+            }  
+        }  
+        .show-with-animation {  
+            animation: showAnimation 1s forwards;  
+        }  
+        /* Ensure context-view is hidden initially */  
+        .context-view {  
+            opacity: 0;  
+            transform: translateY(50%);  
+        }  
+        /* Loading GIF Styling with Animations */  
+        #loading-gif img {  
+            max-width: 150px;  
+            width: 100%;  
+            animation: rotateLoading 2s linear infinite;  
+        }  
+        @keyframes rotateLoading {  
+            0% {  
+                transform: rotate(0deg) scale(1);  
+            }  
+            50% {  
+                transform: rotate(180deg) scale(1.1);  
+            }  
+            100% {  
+                transform: rotate(360deg) scale(1);  
+            }  
+        }  
+        /* Toggle Switch Styling */  
+        .toggle-wrapper {  
+            display: flex;  
+            align-items: center;  
+            margin-bottom: 1rem;  
+            cursor: pointer;  
+            user-select: none;  
+        }  
+        .toggle-label {  
+            margin-right: 0.5rem;  
+            font-weight: bold;  
+            color: #374151;  
+        }  
+        .toggle {  
+            width: 50px;  
+            height: 25px;  
+            background-color: #ddd;  
+            border-radius: 9999px;  
+            position: relative;  
+            transition: background-color 0.3s;  
+        }  
+        .toggle::after {  
+            content: '';  
+            width: 21px;  
+            height: 21px;  
+            background-color: white;  
+            border-radius: 50%;  
+            position: absolute;  
+            top: 2px;  
+            left: 2px;  
+            transition: transform 0.3s;  
+        }  
+        .toggle.active {  
+            background-color: #34D399;  
+        }  
+        .toggle.active::after {  
+            transform: translateX(25px);  
+        }  
+        /* Button Styling */  
+        .button-group {  
+            display: flex;  
+            gap: 1rem;  
+            margin-top: 1rem;  
+        }  
+    </style>        
+</head>        
+<body class="flex items-center justify-center min-h-screen">        
+    <!-- Canvas for Stars -->        
+    <canvas id="stars"></canvas>        
   
-    <!-- Search Container -->    
-    <div class="text-center w-full max-w-xl">    
-        <img    
-        class="animate-bounce"
-        src="https://cdn-icons-png.freepik.com/512/6725/6725867.png"    
-        style="width:5rem; float: right; margin-top: -1em;"    
-    />  
-        <h2 class="text-5xl font-extrabold text-white mb-8 tracking-wide animate-bounce">    
-            Search <span class="text-orange-500">differently.</span>  
-             
-        </h2>    
-        <div class="flex items-center">    
-            <input    
-                type="text"    
-                id="search-input"    
-                class="w-full px-6 py-4 text-lg rounded-full focus:outline-none shadow-lg placeholder-gray-500"    
-                placeholder="Search for knowledge..."    
-            />    
-            <button    
-                id="search-button"    
-                class="ml-4 px-6 py-4 text-lg rounded-full bg-white text-gray-700 shadow-lg hover:bg-gray-100"    
-            >    
-                Search    
-            </button>    
-            <div id="loading-spinner" class="spinner hidden ml-4"></div>    
-            
-        </div>  
-        <br />
-        <br />
-        <div id="region-container"></div>  
-    </div>    
+    <!-- Search Container -->        
+    <div class="text-center w-full max-w-xl">        
+        <img        
+        class="animate-bounce"    
+        src="https://cdn-icons-png.freepik.com/512/6725/6725867.png"        
+        style="width:5rem; float: right; margin-top: -1em;"        
+    />      
+        <h2 class="text-5xl font-extrabold text-white mb-8 tracking-wide animate-bounce">        
+            Search <span class="text-orange-500">differently.</span>      
+                 
+        </h2>        
+        <div class="flex items-center">        
+            <input        
+                type="text"        
+                id="search-input"        
+                class="w-full px-6 py-4 text-lg rounded-full focus:outline-none shadow-lg placeholder-gray-500"        
+                placeholder="Search for knowledge..."        
+            />        
+            <button        
+                id="search-button"        
+                class="ml-4 px-6 py-4 text-lg rounded-full bg-white text-gray-700 shadow-lg hover:bg-gray-100"        
+            >        
+                Search        
+            </button>        
+            <div id="loading-spinner" class="spinner hidden ml-4"></div>        
+                
+        </div>      
+        <br />    
+        <br />    
+        <div id="region-container"></div>      
+    </div>        
   
-    <!-- Results Modal -->    
-    <div    
-        id="results-modal"    
-        class="modal hidden fixed inset-0 bg-white p-10 flex flex-col space-y-6 z-50 overflow-auto"    
-    >    
-        <div class="w-full mx-auto max-w-4xl">    
-            <button    
-                id="close-modal"    
-                class="text-gray-500 text-3xl hover:text-gray-800 transform transition-transform self-end"    
-            >    
-                ✖    
-            </button>    
-            <h2 class="text-4xl font-bold text-gray-800 mb-4">Search Results</h2>    
-            <div id="results-list"></div>    
-            <div class="pagination" id="pagination"></div>    
-            <button    
-                id="create-context-button"    
-                class="px-6 py-4 text-lg rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600 mt-4"    
-            >    
-                Create Context    
-            </button>    
-            <div id="context-display" class="w-full mt-4"></div>    
+    <!-- Results Modal -->        
+    <div        
+        id="results-modal"        
+        class="modal hidden fixed inset-0 bg-white p-10 flex flex-col space-y-6 z-50 overflow-auto"        
+    >        
+        <div class="w-full mx-auto max-w-4xl">        
+            <!-- Search Results Section -->    
+            <div class="search-results">  
+                <button        
+                    id="close-modal"        
+                    class="text-gray-500 text-3xl hover:text-gray-800 transform transition-transform self-end"        
+                >        
+                    ✖        
+                </button>        
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Search Results</h2>        
+                <div id="results-list"></div>        
+                <div class="pagination" id="pagination"></div>        
+                <button        
+                    id="create-context-button"        
+                    class="px-6 py-4 text-lg rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600 mt-4"        
+                >        
+                    Create Context        
+                </button>   
+            </div>  
+            <!-- Loading GIF -->  
+            <div id="loading-gif" class="hidden flex items-center justify-center" style="height: 200px;">  
+                <img src="https://la-solargroup.com/wp-content/uploads/2019/02/loading-icon.gif" alt="Loading..." />  
+            </div>  
+            <!-- Context and Next Steps Section -->    
+            <div class="context-view" style="display:none;">    
+                <button        
+                    id="close-modal-2"        
+                    class="text-gray-500 text-3xl hover:text-gray-800 transform transition-transform self-end"        
+                >        
+                    ✖        
+                </button>        
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Context</h2>        
+                <div id="context-display"></div>        
   
-            <!-- Textarea for user input -->    
-            <div id="user-input-section" class="w-full mt-4 hidden">    
-                <textarea    
-                    id="user-textarea"    
-                    class="w-full p-4 border rounded-lg"    
-                    rows="5"    
-                    placeholder="Enter your input here..."    
-                ></textarea>    
-                <button    
-                    id="submit-ai-button"    
-                    class="mt-4 px-6 py-4 text-lg rounded-full bg-green-500 text-white shadow-lg hover:bg-green-600"    
-                >    
-                    Submit to AI    
-                </button>    
+                <!-- Textarea for user input -->        
+                <div id="user-input-section" class="w-full mt-4">        
+                    <textarea        
+                        id="user-textarea"        
+                        class="w-full p-4 border rounded-lg"        
+                        rows="5"        
+                        placeholder="Enter your input here..."        
+                    ></textarea>        
+                    <button        
+                        id="submit-ai-button"        
+                        class="mt-4 px-6 py-4 text-lg rounded-full bg-green-500 text-white shadow-lg hover:bg-green-600"        
+                    >        
+                        Submit to AI        
+                    </button>        
+                </div>        
+  
+                <!-- Display AI Response -->        
+                <div id="ai-response-display" class="w-full mt-4">  
+                    <!-- Toggle Switch -->  
+                    <div class="toggle-wrapper" id="toggle-switch">  
+                        <span class="toggle-label">AI Answer</span>  
+                        <div class="toggle"></div>  
+                        <span class="toggle-label">Debug</span>  
+                    </div>  
+                    <!-- AI Answer -->  
+                    <div class="tab-content active" id="tab-answer">  
+                        <!-- AI Answer will be displayed here -->  
+                    </div>  
+                    <!-- Debug Info -->  
+                    <div class="tab-content" id="tab-debug">  
+                        <!-- Debug info (JSON payload) will be displayed here -->  
+                    </div>  
+                    <!-- Buttons -->  
+                    <div class="button-group">  
+                        <button        
+                            id="back-to-results-button"        
+                            class="px-6 py-4 text-lg rounded-full bg-yellow-500 text-white shadow-lg hover:bg-yellow-600"        
+                        >        
+                            Back to Search Results        
+                        </button>  
+                        <button        
+                            id="reset-button"        
+                            class="px-6 py-4 text-lg rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600"        
+                        >        
+                            Reset        
+                        </button>  
+                    </div>  
+                </div>        
             </div>    
+        </div>        
+    </div>        
   
-            <!-- Display AI Response -->    
-            <div id="ai-response-display" class="w-full mt-4"></div>    
-        </div>    
-    </div>    
+    <!-- JavaScript -->        
+    <script>        
+        const input = document.getElementById('search-input');        
+        const modal = document.getElementById('results-modal');        
+        const resultsList = document.getElementById('results-list');        
+        const closeModal = document.getElementById('close-modal');        
+        const closeModal2 = document.getElementById('close-modal-2');        
+        const searchButton = document.getElementById('search-button');        
+        const loadingSpinner = document.getElementById('loading-spinner');        
+        const createContextButton = document.getElementById('create-context-button');        
+        const paginationContainer = document.getElementById('pagination');        
+        const userInputSection = document.getElementById('user-input-section');        
+        const userTextarea = document.getElementById('user-textarea');        
+        const submitAIButton = document.getElementById('submit-ai-button');        
+        const aiResponseDisplay = document.getElementById('ai-response-display');        
+        const backToResultsButton = document.getElementById('back-to-results-button');  
+        const resetButton = document.getElementById('reset-button');  
+        let currentQuery = '';        
+        let currentPage = 1;        
+        let totalPages = 1;        
+        let lastAIResponse = {}; // To store the last AI response  
+        // Function to syntax-highlight JSON        
+        function syntaxHighlight(json) {        
+            if (typeof json != 'string') {        
+                json = JSON.stringify(json, undefined, 2);        
+            }        
+            json = json        
+                .replace(/&/g, '&amp;')        
+                .replace(/</g, '&lt;')        
+                .replace(/>/g, '&gt;')        
+                .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\\s*:)?|\b(true|false|null)\b|\d+(\.\d+)?)/g, function (match) {        
+                    let cls = 'number';        
+                    if (/^"/.test(match)) {        
+                        if (/:$/.test(match)) {        
+                            cls = 'key';        
+                        } else {        
+                            cls = 'string';        
+                        }        
+                    } else if (/true|false/.test(match)) {        
+                        cls = 'boolean';        
+                    } else if (/null/.test(match)) {        
+                        cls = 'null';        
+                    }        
+                    return `<span class="${cls}">${match}</span>`;        
+                });        
+            return json;        
+        }        
   
-    <!-- JavaScript -->    
-    <script>    
-        const input = document.getElementById('search-input');    
-        const modal = document.getElementById('results-modal');    
-        const resultsList = document.getElementById('results-list');    
-        const closeModal = document.getElementById('close-modal');    
-        const searchButton = document.getElementById('search-button');    
-        const loadingSpinner = document.getElementById('loading-spinner');    
-        const createContextButton = document.getElementById('create-context-button');    
-        const paginationContainer = document.getElementById('pagination');    
-        const userInputSection = document.getElementById('user-input-section');    
-        const userTextarea = document.getElementById('user-textarea');    
-        const submitAIButton = document.getElementById('submit-ai-button');    
-        const aiResponseDisplay = document.getElementById('ai-response-display');    
-        let currentQuery = '';    
-        let currentPage = 1;    
-        let totalPages = 1;    
+        // Handle search with hyperspace effect        
+        const performSearch = (page = 1) => {        
+            if (input.value.trim()) {        
+                if (page === 1) {        
+                    document.body.classList.add('hyperspace');        
+                    input.disabled = true;        
+                    searchButton.classList.add('hidden');        
+                    loadingSpinner.classList.remove('hidden');        
+                }        
+                currentQuery = input.value;        
+                // Target the div by its ID    
+                const myDiv = document.getElementById('region-container');    
+                // Locate the select element within the div    
+                const selectElement = myDiv.querySelector('select');    
+                // Get the selected value    
+                const selectedValueRegion = selectElement.value;    
   
-        // Function to syntax-highlight JSON    
-        function syntaxHighlight(json) {    
-            if (typeof json != 'string') {    
-                json = JSON.stringify(json, undefined, 2);    
-            }    
-            json = json    
-                .replace(/&/g, '&amp;')    
-                .replace(/</g, '&lt;')    
-                .replace(/>/g, '&gt;')    
-                .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\\s*:)?|\b(true|false|null)\b|\d+(\.\d+)?)/g, function (match) {    
-                    let cls = 'number';    
-                    if (/^"/.test(match)) {    
-                        if (/:$/.test(match)) {    
-                            cls = 'key';    
-                        } else {    
-                            cls = 'string';    
-                        }    
-                    } else if (/true|false/.test(match)) {    
-                        cls = 'boolean';    
-                    } else if (/null/.test(match)) {    
-                        cls = 'null';    
-                    }    
-                    return `<span class="${cls}">${match}</span>`;    
-                });    
-            return json;    
-        }    
+                fetch(`https://ranfysvalle02--oblivious-web-search.modal.run?region=${selectedValueRegion}&query=${encodeURIComponent(currentQuery)}&page=${page}`)        
+                    .then((res) => res.json())        
+                    .then((data) => {        
+                        if (data.results) {        
+                            resultsList.innerHTML = data.results        
+                                .map((item, index) => `        
+                                    <div class="result-item">        
+                                        <div class="result-header">        
+                                            <input type="checkbox" id="result-${index}" value="${item.link}" class="mr-2">        
+                                            <img src="${item.favicon}" class="result-icon" alt="icon">        
+                                            <a href="${item.link}" target="_blank" class="text-xl font-semibold ml-2">${item.title}</a>        
+                                        </div>        
+                                        <div class="text-gray-600">${item.description}</div>        
+                                        <div class="text-sm text-green-600 mt-1">${item.display_link}</div>        
+                                    </div>        
+                                `)        
+                                .join('');        
+                            currentPage = data.page;        
+                            totalPages = data.total_pages;        
+                            renderPagination();        
+                        } else {        
+                            resultsList.innerHTML = '<div class="result-item">No results found.</div>';        
+                            paginationContainer.innerHTML = '';        
+                        }        
+                        if (page === 1) {        
+                            modal.classList.remove('hidden');        
+                            document.body.classList.remove('hyperspace');        
+                            input.disabled = false;        
+                            searchButton.classList.remove('hidden');        
+                            loadingSpinner.classList.add('hidden');        
+                        }        
+                    });        
+            }        
+        };        
   
-        // Handle search with hyperspace effect    
-        const performSearch = (page = 1) => {    
-            if (input.value.trim()) {    
-                if (page === 1) {    
-                    document.body.classList.add('hyperspace');    
-                    input.disabled = true;    
-                    searchButton.classList.add('hidden');    
-                    loadingSpinner.classList.remove('hidden');    
-                }    
-                currentQuery = input.value;    
-                // Target the div by its ID
-                const myDiv = document.getElementById('region-container');
-                // Locate the select element within the div
-                const selectElement = myDiv.querySelector('select');
-                // Get the selected value
-                const selectedValueRegion = selectElement.value;
-
-                fetch(`https://ranfysvalle02--oblivious-web-search.modal.run?region=${selectedValueRegion}&query=${encodeURIComponent(currentQuery)}&page=${page}`)    
-                    .then((res) => res.json())    
-                    .then((data) => {    
-                        if (data.results) {    
-                            resultsList.innerHTML = data.results    
-                                .map((item, index) => `    
-                                    <div class="result-item">    
-                                        <div class="result-header">    
-                                            <input type="checkbox" id="result-${index}" value="${item.link}" class="mr-2">    
-                                            <img src="${item.favicon}" class="result-icon" alt="icon">    
-                                            <a href="${item.link}" target="_blank" class="text-xl font-semibold ml-2">${item.title}</a>    
-                                        </div>    
-                                        <div class="text-gray-600">${item.description}</div>    
-                                        <div class="text-sm text-green-600 mt-1">${item.display_link}</div>    
-                                    </div>    
-                                `)    
-                                .join('');    
-                            currentPage = data.page;    
-                            totalPages = data.total_pages;    
-                            renderPagination();    
-                        } else {    
-                            resultsList.innerHTML = '<div class="result-item">No results found.</div>';    
-                            paginationContainer.innerHTML = '';    
-                        }    
-                        if (page === 1) {    
-                            modal.classList.remove('hidden');    
-                            document.body.classList.remove('hyperspace');    
-                            input.disabled = false;    
-                            searchButton.classList.remove('hidden');    
-                            loadingSpinner.classList.add('hidden');    
-                        }    
-                    });    
-            }    
-        };    
+        input.addEventListener('keydown', (e) => {        
+            if (e.key === 'Enter') {        
+                performSearch();        
+            }        
+        });        
   
-        input.addEventListener('keydown', (e) => {    
-            if (e.key === 'Enter') {    
-                performSearch();    
-            }    
-        });    
+        searchButton.addEventListener('click', () => performSearch());        
   
-        searchButton.addEventListener('click', () => performSearch());    
+        // Close modal        
+        function resetAll() {  
+            modal.classList.add('hidden');        
+            // Clear previous context display and reset views    
+            document.getElementById('context-display').innerHTML = '';        
+            resultsList.innerHTML = '';        
+            paginationContainer.innerHTML = '';        
+            aiResponseDisplay.innerHTML = '';        
+            userInputSection.classList.add('hidden');        
+            userTextarea.value = '';        
+            currentPage = 1;        
+            totalPages = 1;        
+            document.querySelector('.search-results').style.display = 'block';    
+            document.querySelector('.context-view').style.display = 'none';    
+        }  
   
-        // Close modal    
-        closeModal.addEventListener('click', () => {    
-            modal.classList.add('hidden');    
-            // Clear previous context display    
-            document.getElementById('context-display').innerHTML = '';    
-            resultsList.innerHTML = '';    
-            paginationContainer.innerHTML = '';    
-            aiResponseDisplay.innerHTML = '';    
-            userInputSection.classList.add('hidden');    
-            userTextarea.value = '';    
-            currentPage = 1;    
-            totalPages = 1;    
-        });    
+        closeModal.addEventListener('click', resetAll);        
   
-        // ============================  
-        // CREATE CONTEXT USING JINA  
-        // ============================  
-        createContextButton.addEventListener('click', () => {    
-            // Disable button and show loading  
-            createContextButton.disabled = true;  
-            createContextButton.innerText = 'Creating...';  
+        closeModal2.addEventListener('click', resetAll);        
   
-            const selectedUrls = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))    
-                .map(checkbox => checkbox.value);    
+        // ============================      
+        // CREATE CONTEXT USING JINA      
+        // ============================      
+        createContextButton.addEventListener('click', () => {        
+            // Disable button and show loading      
+            createContextButton.disabled = true;      
+            createContextButton.innerText = 'Creating...';      
   
-            if (selectedUrls.length === 0) {    
-                alert('Please select at least one result to create context.');    
-                createContextButton.disabled = false;  
-                createContextButton.innerText = 'Create Context';  
-                return;    
-            }    
+            const selectedUrls = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))        
+                .map(checkbox => checkbox.value);        
   
-            // Hard-coded API key -- only for testing/demo!    
-            const JINA_API_KEY = "jina_708b8f1519364383a80dadfe80d2c7f3W7Ze7227kaweVtlSDf4QrQgCv6wK";    
+            if (selectedUrls.length === 0) {        
+                alert('Please select at least one result to create context.');        
+                createContextButton.disabled = false;      
+                createContextButton.innerText = 'Create Context';      
+                return;        
+            }        
   
-            // For each selected URL, request content using the Jina shortlink  
-            // We'll gather them all with Promise.all.    
-            Promise.all(    
-                selectedUrls.map(url => {    
-                    return fetch(`https://r.jina.ai/${encodeURIComponent(url)}`, {    
-                        method: 'GET',    
-                        headers: {    
-                            'Authorization': `Bearer ${JINA_API_KEY}`,    
-                            'X-Timeout': '180'    
-                        }    
-                    })    
-                    .then(response => {    
-                        if (!response.ok) {    
-                            throw new Error(`Failed to fetch ${url}. Status: ${response.status}`);    
-                        }    
-                        return response.text();    
-                    })    
-                    .then(text => ({ url, text }))    
-                    .catch(err => ({ url, error: err.message }));    
-                })    
-            )    
-            .then(results => {    
-                // Build the same kind of HTML you had before    
-                const contextHtml = results.map((item, idx) => `    
-                    <div class="context-item">    
-                        <h3 class="text-lg font-bold mt-4">${item.url}</h3>    
-                        ${  
-                            item.error  
-                                ? `<p class="text-red-500">${item.error}</p>`  
-                                : `    
-                                <p class="expand-button text-blue-600 underline" data-index="${idx}">  
-                                    Show Context ▼  
-                                </p>    
-                                <pre class="code-block" id="code-block-${idx}">  
-                                    <code>${item.text}</code>  
-                                </pre>`  
-                        }  
-                    </div>    
-                `).join('');    
+            const searchResultsDiv = document.querySelector('.search-results');  
+            const loadingGifDiv = document.getElementById('loading-gif');  
+            const contextViewDiv = document.querySelector('.context-view');  
+  
+            // Add 'hide-with-animation' class to searchResultsDiv  
+            searchResultsDiv.classList.add('hide-with-animation');  
+  
+            // When the animation ends, set display to none  
+            searchResultsDiv.addEventListener('animationend', function handler() {  
+                searchResultsDiv.style.display = 'none';  
+                searchResultsDiv.removeEventListener('animationend', handler);  
+            });  
+  
+            // Show loading gif  
+            loadingGifDiv.classList.remove('hidden');  
+            loadingGifDiv.classList.add('show-loading');       
+  
+            // Hard-coded API key -- only for testing/demo!        
+            const JINA_API_KEY = "jina_708b8f1519364383a80dadfe80d2c7f3W7Ze7227kaweVtlSDf4QrQgCv6wK";        
+  
+            // For each selected URL, request content using the Jina shortlink      
+            // We'll gather them all with Promise.all.        
+            Promise.all(        
+                selectedUrls.map(url => {        
+                    return fetch(`https://r.jina.ai/${encodeURIComponent(url)}`, {        
+                        method: 'GET',        
+                        headers: {        
+                            'Authorization': `Bearer ${JINA_API_KEY}`,        
+                            'X-Timeout': '180'        
+                        }        
+                    })        
+                    .then(response => {        
+                        if (!response.ok) {        
+                            throw new Error(`Failed to fetch ${url}. Status: ${response.status}`);        
+                        }        
+                        return response.text();        
+                    })        
+                    .then(text => ({ url, text }))        
+                    .catch(err => ({ url, error: err.message }));        
+                })        
+            )        
+            .then(results => {        
+                // Build the same kind of HTML you had before        
+                const contextHtml = results.map((item, idx) => `        
+                    <div class="context-item">        
+                        <h3 class="text-lg font-bold mt-4">${item.url}</h3>        
+                        ${      
+                            item.error      
+                                ? `<p class="text-red-500">${item.error}</p>`      
+                                : `        
+                                <p class="expand-button text-blue-600 underline" data-index="${idx}">      
+                                    Show Context ▼      
+                                </p>        
+                                <pre class="code-block" id="code-block-${idx}">      
+                                    <code>${item.text}</code>      
+                                </pre>`      
+                        }      
+                    </div>        
+                `).join('');        
+  
+                // Display context in 'context-display'    
                 document.getElementById('context-display').innerHTML = contextHtml;    
   
-                // Show the user input section    
-                userInputSection.classList.remove('hidden');    
+                // After context is ready, hide loading gif with animation  
+                loadingGifDiv.classList.remove('show-loading');  
+                loadingGifDiv.classList.add('hide-loading');  
   
-                // Add event listeners to expand buttons    
-                document.querySelectorAll('.expand-button').forEach(button => {    
-                    button.addEventListener('click', (e) => {    
-                        const index = e.target.getAttribute('data-index');    
-                        const codeBlock = document.getElementById(`code-block-${index}`);    
-                        if (codeBlock.style.display === 'block') {    
-                            codeBlock.style.display = 'none';    
-                            e.target.textContent = 'Show Context ▼';    
-                        } else {    
-                            codeBlock.style.display = 'block';    
-                            e.target.textContent = 'Hide Context ▲';    
-                        }    
-                    });    
-                });    
-            })    
-            .catch(error => {    
-                console.error('Error:', error);    
-                alert('An error occurred while creating context.');    
-            })  
-            .finally(() => {  
-                createContextButton.disabled = false;  
-                createContextButton.innerText = 'Create Context';  
-            });    
+                loadingGifDiv.addEventListener('animationend', function handler() {  
+                    loadingGifDiv.classList.add('hidden');  
+                    loadingGifDiv.classList.remove('hide-loading');  
+                    loadingGifDiv.removeEventListener('animationend', handler);  
+  
+                    // Show context-view with animation  
+                    contextViewDiv.style.display = 'block';  
+                    contextViewDiv.classList.add('show-with-animation');  
+                });  
+  
+                // Show the user input section        
+                userInputSection.classList.remove('hidden');        
+  
+                // Add event listeners to expand buttons        
+                document.querySelectorAll('.expand-button').forEach(button => {        
+                    button.addEventListener('click', (e) => {        
+                        const index = e.target.getAttribute('data-index');        
+                        const codeBlock = document.getElementById(`code-block-${index}`);        
+                        if (codeBlock.style.display === 'block') {        
+                            codeBlock.style.display = 'none';        
+                            e.target.textContent = 'Show Context ▼';        
+                        } else {        
+                            codeBlock.style.display = 'block';        
+                            e.target.textContent = 'Hide Context ▲';        
+                        }        
+                    });        
+                });        
+            })        
+            .catch(error => {        
+                console.error('Error:', error);        
+                alert('An error occurred while creating context.');        
+            })      
+            .finally(() => {      
+                createContextButton.disabled = false;      
+                createContextButton.innerText = 'Create Context';      
+            });        
+        });        
+  
+        // Submit context and textarea input to /api/ai        
+        submitAIButton.addEventListener('click', () => {        
+            // Disable button and show loading      
+            submitAIButton.disabled = true;      
+            submitAIButton.innerText = 'Submitting...';      
+  
+            const userInput = userTextarea.value.trim();        
+            if (!userInput) {        
+                alert('Please enter your input in the textarea.');        
+                submitAIButton.disabled = false;      
+                submitAIButton.innerText = 'Submit to AI';      
+                return;        
+            }        
+  
+            // Get the context        
+            const contextItems = document.querySelectorAll('.context-item');        
+            const contextData = [];        
+            contextItems.forEach((item, idx) => {        
+                const url = item.querySelector('h3').textContent;        
+                const textElement = item.querySelector(`#code-block-${idx} code`);        
+                const text = textElement ? textElement.textContent : '';        
+                contextData.push({ url, text });        
+            });        
+  
+            // Example usage with your existing AI endpoint.        
+            // Adjust as needed for your actual AI backend.        
+            fetch('https://ranfysvalle02--oblivious-web-api-ai.modal.run', {        
+                method: 'POST',        
+                headers: {        
+                    'Content-Type': 'application/json',        
+                },        
+                body: JSON.stringify({        
+                    context: contextData,        
+                    user_input: userInput        
+                }),        
+            })        
+            .then(response => response.json())        
+            .then(data => {        
+                lastAIResponse = data; // Store the data for debugging  
+  
+                // Display ai_response in the first tab  
+                const aiAnswerElement = document.getElementById('tab-answer');  
+                aiAnswerElement.innerHTML = `<p class="text-gray-800">${data.ai_response}</p>`;  
+                  
+                // Display the entire JSON payload in the debug tab  
+                const debugElement = document.getElementById('tab-debug');  
+                debugElement.innerHTML = `<pre class="json-display"><code>${syntaxHighlight(data)}</code></pre>`;  
+  
+                // Initialize toggle functionality  
+                initToggle();  
+            })        
+            .catch(error => {        
+                console.error('Error:', error);        
+                alert('An error occurred while communicating with the AI.');        
+            })      
+            .finally(() => {      
+                submitAIButton.disabled = false;      
+                submitAIButton.innerText = 'Submit to AI';      
+            });        
+        });        
+  
+        function initToggle() {  
+            const toggle = document.querySelector('.toggle');  
+            const aiAnswer = document.getElementById('tab-answer');  
+            const debugInfo = document.getElementById('tab-debug');  
+  
+            toggle.addEventListener('click', () => {  
+                toggle.classList.toggle('active');  
+                const isActive = toggle.classList.contains('active');  
+                if (isActive) {  
+                    aiAnswer.style.display = 'none';  
+                    debugInfo.style.display = 'block';  
+                } else {  
+                    aiAnswer.style.display = 'block';  
+                    debugInfo.style.display = 'none';  
+                }  
+            });  
+  
+            // Set initial state  
+            aiAnswer.style.display = 'block';  
+            debugInfo.style.display = 'none';  
+        }  
+  
+        // Back to Search Results  
+        backToResultsButton.addEventListener('click', () => {  
+            document.querySelector('.context-view').style.display = 'none';  
+            document.querySelector('.search-results').style.display = 'block';  
+        });  
+  
+        // Reset Application  
+        resetButton.addEventListener('click', () => {  
+            resetAll();  
+            modal.classList.add('hidden');  
+        });  
+  
+        // Pagination        
+        const renderPagination = () => {        
+            let buttons = '';        
+            if (currentPage > 1) {        
+                buttons += `<button onclick="performSearch(${currentPage - 1})">Previous</button>`;        
+            } else {        
+                buttons += `<button class="disabled" disabled>Previous</button>`;        
+            }        
+  
+            // Limit the number of displayed page buttons        
+            let startPage = Math.max(1, currentPage - 2);        
+            let endPage = Math.min(totalPages, currentPage + 2);        
+  
+            if (startPage > 1) {        
+                buttons += `<button onclick="performSearch(1)">1</button>`;        
+                if (startPage > 2) {        
+                    buttons += `<span>...</span>`;        
+                }        
+            }        
+  
+            for (let i = startPage; i <= endPage; i++) {        
+                if (i === currentPage) {        
+                    buttons += `<button class="disabled" disabled>${i}</button>`;        
+                } else {        
+                    buttons += `<button onclick="performSearch(${i})">${i}</button>`;        
+                }        
+            }        
+  
+            if (endPage < totalPages) {        
+                if (endPage < totalPages - 1) {        
+                    buttons += `<span>...</span>`;        
+                }        
+                buttons += `<button onclick="performSearch(${totalPages})">${totalPages}</button>`;        
+            }        
+  
+            if (currentPage < totalPages) {        
+                buttons += `<button onclick="performSearch(${currentPage + 1})">Next</button>`;        
+            } else {        
+                buttons += `<button class="disabled" disabled>Next</button>`;        
+            }        
+            paginationContainer.innerHTML = buttons;        
+        };        
+  
+        // Animate stars        
+        const canvas = document.getElementById('stars');        
+        const ctx = canvas.getContext('2d');        
+        let stars = [];        
+  
+        const createStars = () => {        
+            for (let i = 0; i < 200; i++) {        
+                stars.push({        
+                    x: Math.random() * canvas.width,        
+                    y: Math.random() * canvas.height,        
+                    radius: Math.random() * 1.5,        
+                    alpha: Math.random(),        
+                    speed: Math.random() * 0.5 + 0.5,        
+                });        
+            }        
+        };        
+  
+        const drawStars = () => {        
+            ctx.clearRect(0, 0, canvas.width, canvas.height);        
+            stars.forEach(star => {        
+                ctx.beginPath();        
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);        
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;        
+                ctx.fill();        
+            });        
+        };        
+  
+        const animateStars = () => {        
+            stars.forEach(star => {        
+                star.y += star.speed;        
+                if (star.y > canvas.height) {        
+                    star.y = 0;        
+                    star.x = Math.random() * canvas.width;        
+                }        
+                star.alpha += (Math.random() - 0.5) * 0.02;        
+                star.alpha = Math.max(Math.min(star.alpha, 1), 0.3);        
+            });        
+            drawStars();        
+            requestAnimationFrame(animateStars);        
+        };        
+  
+        const resizeCanvas = () => {        
+            canvas.width = window.innerWidth;        
+            canvas.height = window.innerHeight;        
+            stars = [];        
+            createStars();        
+            drawStars();        
+        };        
+  
+        window.addEventListener('resize', resizeCanvas);        
+        resizeCanvas();        
+        createStars();        
+        animateStars();        
+  
+        // Animate background gradient        
+        document.addEventListener('mousemove', (e) => {        
+            const x = e.clientX / window.innerWidth;        
+            const y = e.clientY / window.innerHeight;        
+            document.body.style.background = `linear-gradient(135deg, rgba(${106 + x * 50}, 17, 203, 1) 0%, rgba(${37 + y * 50}, 117, 252, 1) 100%)`;        
+        });        
+  
+        // Initialize the region dropdown  
+        createRegionDropdown('region-container', function(selectedValue) {    
+            console.log("Selected region: ", selectedValue);    
         });    
   
-        // Submit context and textarea input to /api/ai    
-        submitAIButton.addEventListener('click', () => {    
-            // Disable button and show loading  
-            submitAIButton.disabled = true;  
-            submitAIButton.innerText = 'Submitting...';  
-  
-            const userInput = userTextarea.value.trim();    
-            if (!userInput) {    
-                alert('Please enter your input in the textarea.');    
-                submitAIButton.disabled = false;  
-                submitAIButton.innerText = 'Submit to AI';  
-                return;    
-            }    
-  
-            // Get the context    
-            const contextItems = document.querySelectorAll('.context-item');    
-            const contextData = [];    
-            contextItems.forEach((item, idx) => {    
-                const url = item.querySelector('h3').textContent;    
-                const textElement = item.querySelector(`#code-block-${idx} code`);    
-                const text = textElement ? textElement.textContent : '';    
-                contextData.push({ url, text });    
-            });    
-  
-            // Example usage with your existing AI endpoint.    
-            // Adjust as needed for your actual AI backend.    
-            fetch('https://ranfysvalle02--oblivious-web-api-ai.modal.run', {    
-                method: 'POST',    
-                headers: {    
-                    'Content-Type': 'application/json',    
-                },    
-                body: JSON.stringify({    
-                    context: contextData,    
-                    user_input: userInput    
-                }),    
-            })    
-            .then(response => response.json())    
-            .then(data => {    
-                aiResponseDisplay.innerHTML = `<pre class="json-display"><code>${syntaxHighlight(data)}</code></pre>`;    
-            })    
-            .catch(error => {    
-                console.error('Error:', error);    
-                alert('An error occurred while communicating with the AI.');    
-            })  
-            .finally(() => {  
-                submitAIButton.disabled = false;  
-                submitAIButton.innerText = 'Submit to AI';  
-            });    
-        });    
-  
-        // Pagination    
-        const renderPagination = () => {    
-            let buttons = '';    
-            if (currentPage > 1) {    
-                buttons += `<button onclick="performSearch(${currentPage - 1})">Previous</button>`;    
-            } else {    
-                buttons += `<button class="disabled" disabled>Previous</button>`;    
-            }    
-  
-            // Limit the number of displayed page buttons    
-            let startPage = Math.max(1, currentPage - 2);    
-            let endPage = Math.min(totalPages, currentPage + 2);    
-  
-            if (startPage > 1) {    
-                buttons += `<button onclick="performSearch(1)">1</button>`;    
-                if (startPage > 2) {    
-                    buttons += `<span>...</span>`;    
-                }    
-            }    
-  
-            for (let i = startPage; i <= endPage; i++) {    
-                if (i === currentPage) {    
-                    buttons += `<button class="disabled" disabled>${i}</button>`;    
-                } else {    
-                    buttons += `<button onclick="performSearch(${i})">${i}</button>`;    
-                }    
-            }    
-  
-            if (endPage < totalPages) {    
-                if (endPage < totalPages - 1) {    
-                    buttons += `<span>...</span>`;    
-                }    
-                buttons += `<button onclick="performSearch(${totalPages})">${totalPages}</button>`;    
-            }    
-  
-            if (currentPage < totalPages) {    
-                buttons += `<button onclick="performSearch(${currentPage + 1})">Next</button>`;    
-            } else {    
-                buttons += `<button class="disabled" disabled>Next</button>`;    
-            }    
-            paginationContainer.innerHTML = buttons;    
-        };    
-  
-        // Animate stars    
-        const canvas = document.getElementById('stars');    
-        const ctx = canvas.getContext('2d');    
-        let stars = [];    
-  
-        const createStars = () => {    
-            for (let i = 0; i < 200; i++) {    
-                stars.push({    
-                    x: Math.random() * canvas.width,    
-                    y: Math.random() * canvas.height,    
-                    radius: Math.random() * 1.5,    
-                    alpha: Math.random(),    
-                    speed: Math.random() * 0.5 + 0.5,    
-                });    
-            }    
-        };    
-  
-        const drawStars = () => {    
-            ctx.clearRect(0, 0, canvas.width, canvas.height);    
-            stars.forEach(star => {    
-                ctx.beginPath();    
-                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);    
-                ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;    
-                ctx.fill();    
-            });    
-        };    
-  
-        const animateStars = () => {    
-            stars.forEach(star => {    
-                star.y += star.speed;    
-                if (star.y > canvas.height) {    
-                    star.y = 0;    
-                    star.x = Math.random() * canvas.width;    
-                }    
-                star.alpha += (Math.random() - 0.5) * 0.02;    
-                star.alpha = Math.max(Math.min(star.alpha, 1), 0.3);    
-            });    
-            drawStars();    
-            requestAnimationFrame(animateStars);    
-        };    
-  
-        const resizeCanvas = () => {    
-            canvas.width = window.innerWidth;    
-            canvas.height = window.innerHeight;    
-            stars = [];    
-            createStars();    
-            drawStars();    
-        };    
-  
-        window.addEventListener('resize', resizeCanvas);    
-        resizeCanvas();    
-        createStars();    
-        animateStars();    
-  
-        // Animate background gradient    
-        document.addEventListener('mousemove', (e) => {    
-            const x = e.clientX / window.innerWidth;    
-            const y = e.clientY / window.innerHeight;    
-            document.body.style.background = `linear-gradient(135deg, rgba(${106 + x * 50}, 17, 203, 1) 0%, rgba(${37 + y * 50}, 117, 252, 1) 100%)`;    
-        });    
-    </script>    
-    <script>
- createRegionDropdown('region-container', function(selectedValue) {
-   console.log("Selected region: ", selectedValue);
- });
-    </script>
-</body>    
-</html>  
+    </script>        
+</body>        
+</html>      
